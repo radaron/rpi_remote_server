@@ -1,0 +1,6 @@
+.venv
+secret
+*.code-workspace
+.vscode
+__pycache__
+data/*

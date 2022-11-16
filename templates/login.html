@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link rel="stylesheet" href='/static/login.css' />
+</head>
+<body>
+<form action="/rpi/manage/login", method="post">
+  <div class="container">
+    <p class="message bg-dark ">{{ message }}</p>
+  </div>
+
+  <div class="form-outline mb-4">
+    <input type="text" placeholder="username" name="username" class="form-control" />
+  </div>
+
+  <div class="form-outline mb-4">
+    <input type="password" placeholder="password" name="password" class="form-control" />
+  </div>
+
+  <input type="submit" class="btn btn-danger btn-block mb-4 button" value="Sign in" />
+
+</form>
+</body>
+</html>

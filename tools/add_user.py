@@ -1,0 +1,32 @@
+import sys
+import getpass
+from database import init_db, get_session, Authentication
+from authentication import generate_salt, hash_password
+
+init_db()
+
+username = input("Username: ")
+password = getpass.getpass("Password: ")
+
+if not username or not password:
+    sys.exit(1)
+
+salt = generate_salt()
+password = hash_password(password.encode(), salt)
+
+db_session = get_session()
+
+if record := db_session.get(Authentication, username):
+    record.password = password
+    record.salt = salt
+else:
+    record = Authentication(
+        username = username,
+        password = password,
+        salt = salt
+    )
+    db_session.add(record)
+
+db_session.commit()
+
+db_session.close()
