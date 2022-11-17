@@ -3,4 +3,4 @@ secret
 *.code-workspace
 .vscode
 __pycache__
-data/*
+data/*.db
