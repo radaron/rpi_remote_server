@@ -161,4 +161,5 @@ with UpnpWrapper(server_port) as ext_address:
     except KeyboardInterrupt:
         print("[*] Exiting")
     finally:
+        print("[*] Close socket")
         server_socket.close()
