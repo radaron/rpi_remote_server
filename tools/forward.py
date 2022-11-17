@@ -4,8 +4,9 @@ from datetime import datetime
 import hashlib
 import threading
 import select
-import uuid
 import sys
+import requests
+import upnpy
 
 host_key = paramiko.RSAKey.generate(1024)
 server_address = "0.0.0.0"
@@ -14,6 +15,56 @@ server_port = int(sys.argv[1])
 date_now = datetime.now()
 server_username = hashlib.sha256(f"{date_now.year}{date_now.month}".encode()).hexdigest()[:5]
 server_password = hashlib.sha256(f"{date_now.day}{date_now.hour}".encode()).hexdigest()[:10]
+
+
+class UpnpWrapper:
+
+    def __init__(self, port):
+        upnp = upnpy.UPnP()
+        upnp.discover()
+        device = upnp.get_igd()
+
+        self.service = device['WANIPConnection.1']
+        self.port = port
+
+    @staticmethod
+    def get_lan_ip_address():
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip_addr = s.getsockname()[0]
+        s.close()
+        return ip_addr
+
+    @staticmethod
+    def get_wan_ip_address():
+        return requests.get("https://ifconfig.me").text
+
+    def start_upnp(self):
+        print(f"[*] Start Upnp")
+        self.service.AddPortMapping(
+        NewRemoteHost='',
+        NewExternalPort=self.port,
+        NewProtocol='TCP',
+        NewInternalPort=self.port,
+        NewInternalClient=self.get_lan_ip_address(),
+        NewEnabled=1,
+        NewPortMappingDescription='RPI_remote',
+        NewLeaseDuration=0)
+
+    def stop_upnp(self):
+        print(f"[*] Stop Upnp")
+        self.service.DeletePortMapping(
+        NewRemoteHost='',
+        NewExternalPort=self.port,
+        NewProtocol='TCP')
+
+    def __enter__(self):
+        self.start_upnp()
+        return f"{self.get_wan_ip_address()}:{self.port}"
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop_upnp()
+
 
 class Server(paramiko.ServerInterface):
     def __init__(self):
@@ -35,6 +86,7 @@ class Server(paramiko.ServerInterface):
         if kind in ["forwarded-tcpip", "session"]:
             return paramiko.OPEN_SUCCEEDED
         return paramiko.OPEN_FAILED_ADMINISTRATIVELY_PROHIBITED
+
 
 def client_handler(client_socket):
     session_transport = paramiko.Transport(client_socket)
@@ -100,9 +152,13 @@ print(f"[*] Bind Success {server_address}:{server_port}")
 print(f"[*] Authentication username: {server_username}, password: {server_password}")
 server_socket.listen(20)
 
-try:
-    client_socket, addr = server_socket.accept()
-    print(f"[*] Incoming TCP connection from {addr[0]}:{addr[1]}")
-    client_handler(client_socket)
-finally:
-    server_socket.close()
+with UpnpWrapper(server_port) as ext_address:
+    print(f"[*] External address: {ext_address}")
+    try:
+        client_socket, addr = server_socket.accept()
+        print(f"[*] Incoming TCP connection from {addr[0]}:{addr[1]}")
+        client_handler(client_socket)
+    except KeyboardInterrupt:
+        print("[*] Exiting")
+    finally:
+        server_socket.close()
