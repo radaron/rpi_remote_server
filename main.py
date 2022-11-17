@@ -8,6 +8,8 @@ app.secret_key = get_secret_key()
 
 init_db()
 
+ORDER_KEYS = ("host", "port", "from_port", "to_port", "passwd", "username")
+
 @app.route("/rpi/order", methods=['GET'])
 def get_order():
     sender_name = request.headers.get('name', None)
@@ -19,7 +21,8 @@ def get_order():
     resp = {}
 
     if record := db_session.get(RpiOrders, sender_name):
-        resp = {k: v for k, v in {"host": record.host, "port": record.port, "passwd": record.passwd, "username": record.username}.items() if v}
+        if all([bool(getattr(record, value)) for value in ORDER_KEYS]):
+            resp = {k: getattr(record, k) for k in ORDER_KEYS}
         record.polled_date = get_time()
     else:
         record = RpiOrders(name=sender_name, polled_date=get_time())
@@ -50,6 +53,8 @@ def manage():
                     record.passwd = request.form.get('passwd')
                     record.host = request.form.get('host')
                     record.port = request.form.get('port')
+                    record.from_port = request.form.get('from_port')
+                    record.to_port = request.form.get('to_port')
                     record.username = request.form.get('username')
             elif name := request.form.get('remove'):
                 if record := db_session.get(RpiOrders, name):
