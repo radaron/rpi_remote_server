@@ -3,14 +3,14 @@ from database import init_db, get_session, RpiOrders, Authentication
 from authentication import validate_password
 from util import get_time, get_secret_key, validate_fields_exists
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path="/rpi/static")
 app.secret_key = get_secret_key()
 
 init_db()
 
 ORDER_KEYS = ("host", "port", "from_port", "to_port", "passwd", "username")
 
-@app.route("/order", methods=['GET'])
+@app.route("/rpi/order", methods=['GET'])
 def get_order():
     sender_name = request.headers.get('name', None)
 
@@ -33,7 +33,7 @@ def get_order():
     return jsonify(resp)
 
 
-@app.route("/manage", methods=['POST', 'GET'])
+@app.route("/rpi/manage", methods=['POST', 'GET'])
 def manage():
     if session.get("username"):
 
@@ -68,7 +68,7 @@ def manage():
         return redirect("/rpi/manage/login")
 
 
-@app.route("/manage/login", methods=['POST', 'GET'])
+@app.route("/rpi/manage/login", methods=['POST', 'GET'])
 def manage_login():
     if session.get("username"):
         return redirect("/rpi/manage")
@@ -91,7 +91,7 @@ def manage_login():
     db_session.close()
     return render_template("login.html", message="Invalid username or password!")
 
-@app.route("/manage/logout")
+@app.route("/rpi/manage/logout")
 def manage_logout():
     session.pop("username", None)
     return redirect("/rpi/manage/login")
