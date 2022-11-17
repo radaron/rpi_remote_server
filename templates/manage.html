@@ -23,6 +23,8 @@
             <th scope="col">Password</th>
             <th scope="col">Host</th>
             <th scope="col">Port</th>
+            <th scope="col">From port</th>
+            <th scope="col">To port</th>
             <th scope="col">Updated</th>
             <th scope="col"></th>
             <th scope="col"></th>
@@ -33,10 +35,12 @@
          <form action="/rpi/manage" method="post">
             <tr>
                <td>{{record.name}}</td>
-               <td><input type="text" name="username" value="{{record.username}}"><br></td>
-               <td><input type="text" name="passwd" value="{{record.passwd}}"><br></td>
-               <td><input type="text" name="host" value="{{record.host}}"><br></td>
-               <td><input type="number" name="port" value="{{record.port}}"><br></td>
+               <td><input type="text" name="username" value="{{record.username if record.username else ''}}"><br></td>
+               <td><input type="text" name="passwd" value="{{record.passwd if record.passwd else ''}}"><br></td>
+               <td><input type="text" name="host" value="{{record.host if record.host else ''}}"><br></td>
+               <td><input type="number" name="port" class="port-field" value="{{record.port if record.port else 0}}"><br></td>
+               <td><input type="number" name="from_port" class="port-field" value="{{record.from_port if record.from_port else 0}}"><br></td>
+               <td><input type="number" name="to_port" class="port-field" value="{{record.to_port if record.to_port else 0}}"><br></td>
                <td>{{ current_date - record.polled_date }}<br></td>
                <td><button type="submit" name="edit" value="{{record.name}}" class="btn btn-outline-success my-2 my-sm-0">Edit</button></td>
                <td><button type="submit" name="remove" value="{{record.name}}" class="btn btn-outline-danger my-2 my-sm-0">Delete</button></td>

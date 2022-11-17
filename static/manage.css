@@ -1,3 +1,7 @@
 body {
     background-color: rgb(223, 74, 74);
 }
+
+.port-field {
+    width: 150px;
+}

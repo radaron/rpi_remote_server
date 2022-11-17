@@ -18,6 +18,8 @@ class RpiOrders(Base):
     host = db.Column(db.String(50))
     username = db.Column(db.String(50))
     port = db.Column(db.Integer)
+    from_port = db.Column(db.Integer)
+    to_port = db.Column(db.Integer)
     polled_date = db.Column(db.DateTime)
     passwd = db.Column(db.String(50))
 
