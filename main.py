@@ -10,7 +10,7 @@ init_db()
 
 ORDER_KEYS = ("host", "port", "from_port", "to_port", "passwd", "username")
 
-@app.route("/rpi/order", methods=['GET'])
+@app.route("/order", methods=['GET'])
 def get_order():
     sender_name = request.headers.get('name', None)
 
@@ -33,7 +33,7 @@ def get_order():
     return jsonify(resp)
 
 
-@app.route("/rpi/manage", methods=['POST', 'GET'])
+@app.route("/manage", methods=['POST', 'GET'])
 def manage():
     if session.get("username"):
 
@@ -68,7 +68,7 @@ def manage():
         return redirect("/rpi/manage/login")
 
 
-@app.route("/rpi/manage/login", methods=['POST', 'GET'])
+@app.route("/manage/login", methods=['POST', 'GET'])
 def manage_login():
     if session.get("username"):
         return redirect("/rpi/manage")
@@ -91,7 +91,7 @@ def manage_login():
     db_session.close()
     return render_template("login.html", message="Invalid username or password!")
 
-@app.route("/rpi/manage/logout")
+@app.route("/manage/logout")
 def manage_logout():
     session.pop("username", None)
     return redirect("/rpi/manage/login")
