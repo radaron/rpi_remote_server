@@ -3,7 +3,7 @@ body {
  padding: 25%;
  padding-right: 30%;
  padding-left: 30%;
- background-image: url('/static/background.png');
+ background-image: url('/rpi/static/background.png');
  background-repeat: no-repeat;
  background-size: 100% 100%;
 }
