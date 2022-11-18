@@ -14,7 +14,7 @@ server_port = int(sys.argv[1])
 
 date_now = datetime.now()
 server_username = hashlib.sha256(f"{date_now.year}{date_now.month}".encode()).hexdigest()[:5]
-server_password = hashlib.sha256(f"{date_now.day}{date_now.hour}".encode()).hexdigest()[:10]
+server_password = hashlib.sha256(f"{date_now.day}".encode()).hexdigest()[:10]
 
 
 class UpnpWrapper:
@@ -133,7 +133,7 @@ def client_handler(client_socket):
                         print(f"[*] Sending {len(data)} bytes via TCP Channel")
                         client_tunnel_socket.send(data)
             except (paramiko.SSHException, Exception) as err:
-                print("[*] ", str(err))
+                print(f"[*] {err}")
                 try:
                     print("[*] Closing associated sockets and channels")
                     client_tunnel_socket.close()
@@ -141,25 +141,22 @@ def client_handler(client_socket):
                 except:
                     pass
 
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-try:
-    server_socket.bind((server_address, server_port))
-except:
-    print("[!] Bind Error")
-    sys.exit(1)
-
-print(f"[*] Bind Success {server_address}:{server_port}")
-print(f"[*] Authentication username: {server_username}, password: {server_password}")
-server_socket.listen(20)
-
-with UpnpWrapper(server_port) as ext_address:
-    print(f"[*] External address: {ext_address}")
+if __name__ == "__main__":
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        client_socket, addr = server_socket.accept()
-        print(f"[*] Incoming TCP connection from {addr[0]}:{addr[1]}")
-        client_handler(client_socket)
+        server_socket.bind((server_address, server_port))
+        server_socket.listen(20)
+
+        with UpnpWrapper(server_port) as ext_address:
+            print(f"[*] External address: {ext_address}")
+            print(f"[*] Authentication username: {server_username} password: {server_password}")
+            client_socket, addr = server_socket.accept()
+            print(f"[*] Incoming TCP connection from {addr[0]}:{addr[1]}")
+            client_handler(client_socket)
     except KeyboardInterrupt:
         print("[*] Exiting")
+    except Exception as e:
+        print("[!] Error: {e}")
     finally:
         print("[*] Close socket")
         server_socket.close()
