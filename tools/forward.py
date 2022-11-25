@@ -141,7 +141,7 @@ def client_handler(client_socket):
                 except:
                     pass
 
-if __name__ == "__main__":
+def main():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         server_socket.bind((server_address, server_port))
@@ -156,7 +156,10 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("[*] Exiting")
     except Exception as e:
-        print("[!] Error: {e}")
+        print(f"[!] Error: {e}")
     finally:
         print("[*] Close socket")
         server_socket.close()
+
+if __name__ == "__main__":
+    main()
