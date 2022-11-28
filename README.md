@@ -54,3 +54,8 @@ poetry run add-user
 ```
 poetry run forvard <PORT>
 ```
+
+## Check logs
+```
+journalctl -fu rpi-remote-server
+```
