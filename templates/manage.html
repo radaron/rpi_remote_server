@@ -14,36 +14,19 @@
    </nav>
 </header>
 <script>
-    getData()
-    getStatus()
+    var current_data = []
 
-    var intervalId = setInterval(function() {getStatus()}, 2000);
+    updateData()
 
-    function updateStatus(data) {
-        const date_obj = new Date();
-        var time = date_obj.getTime() / 1000
-        var image_name = ""
+    setInterval(function() {updateData()}, 2000);
 
-        for (const element of data) {
-            if ((time-element.polled_time) > 60) {
-                image_name = "red"
-            } else {
-                image_name = "green"
-            }
 
-            if (!document.getElementById(element.name+"_status")) {
-                displayData(data)
-                updateStatus(data)
-                return
-            }
-            document.getElementById(element.name+"_status").innerHTML = '<img src="/rpi/static/'+image_name+'.png">';
-        }
-    }
-
-    function displayData(data) {
+    function updateAll(data) {
         var value = ""
 
-        for (const element of data) {
+        console.log("Update all")
+
+        for (const element of data.static) {
             value += '<tr>'
             value += '<td>'+element.name+'</td>'
             value += '<td><input type="text" name="'+element.name+'_username" value="'+element.username+'"><br></td>'
@@ -60,30 +43,46 @@
 
         document.getElementById("table-body").innerHTML = value;
 
+        current_data = data.static;
     }
 
-    function getStatus() {
-        var xmlhttp = new XMLHttpRequest();
-        var url = "/rpi/manage/data";
 
-        xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                var myArr = JSON.parse(this.responseText);
-                updateStatus(myArr);
+    function updateStatus(data){
+        var date_obj = new Date();
+        var time = date_obj.getTime() / 1000
+        var image_name = ""
+
+        console.log("Update status")
+
+        if (JSON.stringify(data.static) != JSON.stringify(current_data))
+        {
+            updateAll(data)
+        }
+
+        for (const element of data.dynamic) {
+            if ((time-element.polled_time) > 60) {
+                image_name = "red"
+            } else {
+                image_name = "green"
             }
-        };
-        xmlhttp.open("GET", url, true);
-        xmlhttp.send();
+
+            if (!document.getElementById(element.name+"_status")) {
+                updateAll(data)
+                updateStatus(data)
+                return
+            }
+            document.getElementById(element.name+"_status").innerHTML = '<img src="/rpi/static/'+image_name+'.png">';
+        }
     }
 
-    function getData() {
+    function updateData() {
         var xmlhttp = new XMLHttpRequest();
         var url = "/rpi/manage/data";
 
         xmlhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                var myArr = JSON.parse(this.responseText);
-                displayData(myArr);
+                data = JSON.parse(this.responseText);
+                updateStatus(data);
             }
         };
         xmlhttp.open("GET", url, true);

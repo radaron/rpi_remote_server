@@ -9,7 +9,9 @@ app.secret_key = get_secret_key()
 init_db()
 
 ORDER_KEYS = ("host", "port", "from_port", "to_port", "passwd", "username")
-MANGE_KEYS = ("name", "host", "port", "from_port", "to_port", "passwd", "username", "polled_time")
+MANGE_KEYS = {"static": ("name", "host", "port", "from_port", "to_port", "passwd", "username"),
+              "dynamic": ("name", "polled_time")
+}
 
 
 @app.route('/favicon.ico')
@@ -45,13 +47,15 @@ def manage_data():
     if session.get("username"):
         db_session = get_session()
 
-        resp = []
+        resp = {}
 
         records = db_session.query(RpiOrders).all()
 
         for record in records:
-            data = {k: getattr(record, k) for k in MANGE_KEYS}
-            resp.append(data)
+            for data_type in MANGE_KEYS:
+                if data_type not in resp:
+                    resp[data_type] = []
+                resp[data_type].append({k: getattr(record, k) for k in MANGE_KEYS[data_type]})
 
         db_session.close()
         return jsonify(resp)
