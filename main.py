@@ -14,11 +14,6 @@ MANGE_KEYS = {"static": ("name", "host", "port", "from_port", "to_port", "passwd
 }
 
 
-@app.route('/favicon.ico')
-def favicon():
-    return app.send_static_file("favicon.ico")
-
-
 @app.route("/rpi/order", methods=['GET'])
 def get_order():
     sender_name = request.headers.get('name', None)
