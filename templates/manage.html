@@ -24,8 +24,6 @@
     function updateAll(data) {
         var value = ""
 
-        console.log("Update all")
-
         for (const element of data.static) {
             value += '<tr>'
             value += '<td>'+element.name+'</td>'
@@ -51,8 +49,6 @@
         var date_obj = new Date();
         var time = date_obj.getTime() / 1000
         var image_name = ""
-
-        console.log("Update status")
 
         if (JSON.stringify(data.static) != JSON.stringify(current_data))
         {
