@@ -107,6 +107,7 @@ class Server(paramiko.ServerInterface):
         return paramiko.AUTH_FAILED
     def check_port_forward_request(self, addr, port):
         print(f"[*] Forwarding port {port}")
+        self.to_port = port
         self.listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.listen.bind((SERVER_ADDRESS, int(port)))
         self.listen.listen(1)
@@ -140,38 +141,39 @@ def client_handler(client_socket):
         session_transport.close()
     else:
         print("[*] Success - SSH channel active")
-        while session_chan.active:
-            try:
+        with UpnpWrapper(server.to_port) as (ext_ip, ext_port):
+            print(f"[*] Waiting conenction on {ext_ip}, {ext_port}")
+            while session_chan.active:
                 try:
-                    client_tunnel_socket, addr = server.listen.accept()
-                except:
-                    print("[*] Closing associated channels")
-                    session_transport.close()
-                    break
-                print(f"[*] Incoming tunneled conenction from {addr[0]}:{addr[1]}")
-                tunnel_chan = session_transport.open_forwarded_tcpip_channel(client_tunnel_socket.getsockname(), client_tunnel_socket.getpeername())
-                while True:
-                    r, w, x = select.select([client_tunnel_socket, tunnel_chan], [], [])
-                    if client_tunnel_socket in r:
-                        data = client_tunnel_socket.recv(1024)
-                        if len(data) == 0:
-                            break
-                        print(f"[*] Sending {len(data)} bytes via SSH Channel")
-                        tunnel_chan.send(data)
-                    if tunnel_chan in r:
-                        data = tunnel_chan.recv(1024)
-                        if len(data) == 0:
-                            break
-                        print(f"[*] Sending {len(data)} bytes via TCP Channel")
-                        client_tunnel_socket.send(data)
-            except (paramiko.SSHException, Exception) as err:
-                print(f"[*] {err}")
-                try:
-                    print("[*] Closing associated sockets and channels")
-                    client_tunnel_socket.close()
-                    session_transport.close()
-                except:
-                    pass
+                    try:
+                        client_tunnel_socket, addr = server.listen.accept()
+                    except:
+                        print("[*] Closing associated channels")
+                        session_transport.close()
+                        break
+                    tunnel_chan = session_transport.open_forwarded_tcpip_channel(client_tunnel_socket.getsockname(), client_tunnel_socket.getpeername())
+                    while True:
+                        r, w, x = select.select([client_tunnel_socket, tunnel_chan], [], [])
+                        if client_tunnel_socket in r:
+                            data = client_tunnel_socket.recv(1024)
+                            if len(data) == 0:
+                                break
+                            print(f"[*] Sending {len(data)} bytes via SSH Channel")
+                            tunnel_chan.send(data)
+                        if tunnel_chan in r:
+                            data = tunnel_chan.recv(1024)
+                            if len(data) == 0:
+                                break
+                            print(f"[*] Sending {len(data)} bytes via TCP Channel")
+                            client_tunnel_socket.send(data)
+                except (paramiko.SSHException, Exception) as err:
+                    print(f"[*] {err}")
+                    try:
+                        print("[*] Closing associated sockets and channels")
+                        client_tunnel_socket.close()
+                        session_transport.close()
+                    except:
+                        pass
 
 def main():
     parser = argparse.ArgumentParser(description='Start port forwarding with remote clients.')
@@ -192,7 +194,7 @@ def main():
             to_port = get_random_port()
             print(f"[*] External address: {ext_ip} {ext_port}")
             print(f"[*] Authentication username: {SERVER_USERNAME} password: {SERVER_PASSWORD}")
-            print(f"[*] Forward cleint port: {args.port} to server port: {to_port}")
+            print(f"[*] Forward client port: {args.port} to server port: {to_port}")
             update_db_record(args.name, SERVER_USERNAME, SERVER_PASSWORD, ext_ip, ext_port, args.port, to_port)
             client_socket, addr = server_socket.accept()
             print(f"[*] Incoming TCP connection from {addr[0]}:{addr[1]}")
