@@ -13,41 +13,104 @@
       </form>
    </nav>
 </header>
+<script>
+    getData()
+    getStatus()
+
+    var intervalId = setInterval(function() {getStatus()}, 2000);
+
+    function updateStatus(data) {
+        const date_obj = new Date();
+        var time = date_obj.getTime() / 1000
+        var image_name = ""
+
+        for (const element of data) {
+            if ((time-element.polled_time) > 60) {
+                image_name = "red"
+            } else {
+                image_name = "green"
+            }
+
+            if (!document.getElementById(element.name+"_status")) {
+                displayData(data)
+                updateStatus(data)
+                return
+            }
+            document.getElementById(element.name+"_status").innerHTML = '<img src="/rpi/static/'+image_name+'.png">';
+        }
+    }
+
+    function displayData(data) {
+        var value = ""
+
+        for (const element of data) {
+            value += '<tr>'
+            value += '<td>'+element.name+'</td>'
+            value += '<td><input type="text" name="'+element.name+'_username" value="'+element.username+'"><br></td>'
+            value += '<td><input type="text" name="'+element.name+'_passwd" value="'+element.passwd+'"><br></td>'
+            value += '<td><input type="text" name="'+element.name+'_host" value="'+element.host+'"><br></td>'
+            value += '<td><input type="number" name="'+element.name+'_port" class="port-field" value="'+element.port+'"><br></td>'
+            value += '<td><input type="number" name="'+element.name+'_from_port" class="port-field" value="'+element.from_port+'"><br></td>'
+            value += '<td><input type="number" name="'+element.name+'_to_port" class="port-field" value="'+element.to_port+'"><br></td>'
+            value += '<td id="'+element.name+'_status"><br></td>'
+            value += '<td><button type="submit" name="connect" value="'+element.name+'" class="btn btn-outline-success my-2 my-sm-0">Connect</button></td>'
+            value += '<td><button type="submit" name="remove" value="'+element.name+'" class="btn btn-outline-danger my-2 my-sm-0">Delete</button></td>'
+            value += '</tr>'
+        }
+
+        document.getElementById("table-body").innerHTML = value;
+
+    }
+
+    function getStatus() {
+        var xmlhttp = new XMLHttpRequest();
+        var url = "/rpi/manage/data";
+
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var myArr = JSON.parse(this.responseText);
+                updateStatus(myArr);
+            }
+        };
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+    }
+
+    function getData() {
+        var xmlhttp = new XMLHttpRequest();
+        var url = "/rpi/manage/data";
+
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var myArr = JSON.parse(this.responseText);
+                displayData(myArr);
+            }
+        };
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+    }
+
+</script>
 <body>
    <div class="p-2 table-responsive">
-      <table class="table table-dark table-striped">
-      <thead>
-         <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Username</th>
-            <th scope="col">Password</th>
-            <th scope="col">Host</th>
-            <th scope="col">Port</th>
-            <th scope="col">From port</th>
-            <th scope="col">To port</th>
-            <th scope="col">Updated</th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-         </tr>
-      </thead>
-      <tbody>
-         {% for record in records %}
-         <form action="/rpi/manage" method="post">
-            <tr>
-               <td>{{record.name}}</td>
-               <td><input type="text" name="username" value="{{record.username if record.username else ''}}"><br></td>
-               <td><input type="text" name="passwd" value="{{record.passwd if record.passwd else ''}}"><br></td>
-               <td><input type="text" name="host" value="{{record.host if record.host else ''}}"><br></td>
-               <td><input type="number" name="port" class="port-field" value="{{record.port if record.port else 0}}"><br></td>
-               <td><input type="number" name="from_port" class="port-field" value="{{record.from_port if record.from_port else 0}}"><br></td>
-               <td><input type="number" name="to_port" class="port-field" value="{{record.to_port if record.to_port else 0}}"><br></td>
-               <td>{{ current_date - record.polled_date }}<br></td>
-               <td><button type="submit" name="edit" value="{{record.name}}" class="btn btn-outline-success my-2 my-sm-0">Edit</button></td>
-               <td><button type="submit" name="remove" value="{{record.name}}" class="btn btn-outline-danger my-2 my-sm-0">Delete</button></td>
-            </tr>
-         </form>
-         {% endfor %}
-      </tbody>
-      </table>
+        <form action="/rpi/manage" method="post">
+            <table class="table table-dark table-striped text-center">
+            <thead>
+               <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Username</th>
+                  <th scope="col">Password</th>
+                  <th scope="col">Host</th>
+                  <th scope="col">Port</th>
+                  <th scope="col">From port</th>
+                  <th scope="col">To port</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+               </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+            </table>
+        </form>
    </div>
  </body>

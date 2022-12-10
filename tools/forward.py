@@ -1,20 +1,52 @@
 import paramiko
 import socket
-from datetime import datetime
-import hashlib
+from uuid import uuid4
 import threading
 import select
 import sys
+import argparse
 import requests
 import upnpy
+import random
+from database import init_db, get_session, RpiOrders
 
-host_key = paramiko.RSAKey.generate(1024)
-server_address = "0.0.0.0"
-server_port = int(sys.argv[1])
+HOST_KEY = paramiko.RSAKey.generate(1024)
+SERVER_ADDRESS = "0.0.0.0"
 
-date_now = datetime.now()
-server_username = hashlib.sha256(f"{date_now.year}{date_now.month}".encode()).hexdigest()[:5]
-server_password = hashlib.sha256(f"{date_now.day}".encode()).hexdigest()[:10]
+init_db()
+
+SERVER_USERNAME = str(uuid4().hex)[:5]
+SERVER_PASSWORD = str(uuid4().hex)[:5]
+
+
+def update_db_record(name, username, password, host, port, from_port, to_port):
+    db_session = get_session()
+    if record := db_session.get(RpiOrders, name):
+        record.name = name
+        record.username = username
+        record.passwd = password
+        record.host = host
+        record.port = int(port)
+        record.from_port = int(from_port)
+        record.to_port = int(to_port)
+        db_session.commit()
+    db_session.close()
+
+
+def delete_db_record(name):
+    db_session = get_session()
+    if record := db_session.get(RpiOrders, name):
+        db_session.delete(record)
+        db_session.commit()
+    db_session.close()
+
+
+def get_random_port():
+    while True:
+        port = random.randint(30000, 60000)
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            if not s.connect_ex(('127.0.0.1', port)) == 0:
+                return port
 
 
 class UpnpWrapper:
@@ -60,7 +92,7 @@ class UpnpWrapper:
 
     def __enter__(self):
         self.start_upnp()
-        return f"{self.get_wan_ip_address()}:{self.port}"
+        return self.get_wan_ip_address(), self.port
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.stop_upnp()
@@ -70,13 +102,13 @@ class Server(paramiko.ServerInterface):
     def __init__(self):
         self.event = threading.Event()
     def check_auth_password(self, username, password):
-        if username == server_username and password == server_password:
+        if username == SERVER_USERNAME and password == SERVER_PASSWORD:
             return paramiko.AUTH_SUCCESSFUL
         return paramiko.AUTH_FAILED
     def check_port_forward_request(self, addr, port):
         print(f"[*] Forwarding port {port}")
         self.listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.listen.bind(("127.0.0.1", int(port)))
+        self.listen.bind((SERVER_ADDRESS, int(port)))
         self.listen.listen(1)
         return self.listen.getsockname()[1]
     def cancel_port_forward_request(self, addr, port):
@@ -90,11 +122,11 @@ class Server(paramiko.ServerInterface):
 
 def client_handler(client_socket):
     session_transport = paramiko.Transport(client_socket)
-    session_transport.add_server_key(host_key)
+    session_transport.add_server_key(HOST_KEY)
     server = Server()
     try:
         session_transport.start_server(server=server)
-    except SSHException as err:
+    except paramiko.SSHException as err:
         print(f"[!] SSH Negotiation Failed")
         sys.exit(1)
 
@@ -142,14 +174,26 @@ def client_handler(client_socket):
                     pass
 
 def main():
+    parser = argparse.ArgumentParser(description='Start port forwarding with remote clients.')
+    parser.add_argument('-n', '--name', metavar='NAME', type=str, required=True,
+                        help='Name of client for connect')
+    parser.add_argument('-p', '--port', type=int, required=True,
+                        help='From port for forwarding from remote client.')
+    args = parser.parse_args()
+
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        server_socket.bind((server_address, server_port))
+        ssh_port = get_random_port()
+
+        server_socket.bind((SERVER_ADDRESS, ssh_port))
         server_socket.listen(20)
 
-        with UpnpWrapper(server_port) as ext_address:
-            print(f"[*] External address: {ext_address}")
-            print(f"[*] Authentication username: {server_username} password: {server_password}")
+        with UpnpWrapper(ssh_port) as (ext_ip, ext_port):
+            to_port = get_random_port()
+            print(f"[*] External address: {ext_ip} {ext_port}")
+            print(f"[*] Authentication username: {SERVER_USERNAME} password: {SERVER_PASSWORD}")
+            print(f"[*] Forward cleint port: {args.port} to server port: {to_port}")
+            update_db_record(args.name, SERVER_USERNAME, SERVER_PASSWORD, ext_ip, ext_port, args.port, to_port)
             client_socket, addr = server_socket.accept()
             print(f"[*] Incoming TCP connection from {addr[0]}:{addr[1]}")
             client_handler(client_socket)
@@ -160,6 +204,7 @@ def main():
     finally:
         print("[*] Close socket")
         server_socket.close()
+        delete_db_record(args.name)
 
 if __name__ == "__main__":
     main()

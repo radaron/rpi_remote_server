@@ -1,7 +1,7 @@
-from datetime import datetime
+import time
 
 def get_time():
-    return datetime.now().replace(microsecond=0)
+    return time.time()
 
 
 def get_secret_key():

@@ -9,6 +9,13 @@ app.secret_key = get_secret_key()
 init_db()
 
 ORDER_KEYS = ("host", "port", "from_port", "to_port", "passwd", "username")
+MANGE_KEYS = ("name", "host", "port", "from_port", "to_port", "passwd", "username", "polled_time")
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return app.send_static_file("favicon.ico")
+
 
 @app.route("/rpi/order", methods=['GET'])
 def get_order():
@@ -23,14 +30,33 @@ def get_order():
     if record := db_session.get(RpiOrders, sender_name):
         if all([bool(getattr(record, value)) for value in ORDER_KEYS]):
             resp = {k: getattr(record, k) for k in ORDER_KEYS}
-        record.polled_date = get_time()
+        record.polled_time = get_time()
     else:
-        record = RpiOrders(name=sender_name, polled_date=get_time())
+        record = RpiOrders(name=sender_name, polled_time=get_time())
         db_session.add(record)
 
     db_session.commit()
     db_session.close()
     return jsonify(resp)
+
+
+@app.route("/rpi/manage/data", methods=['GET'])
+def manage_data():
+    if session.get("username"):
+        db_session = get_session()
+
+        resp = []
+
+        records = db_session.query(RpiOrders).all()
+
+        for record in records:
+            data = {k: getattr(record, k) for k in MANGE_KEYS}
+            resp.append(data)
+
+        db_session.close()
+        return jsonify(resp)
+    else:
+        return abort(401)
 
 
 @app.route("/rpi/manage", methods=['POST', 'GET'])
@@ -43,19 +69,19 @@ def manage():
             records = db_session.query(RpiOrders).all()
 
             db_session.close()
-            return render_template('manage.html', records=records, current_date=get_time())
+            return render_template('manage.html')
         else:
             db_session = get_session()
 
-            if name := request.form.get('edit'):
+            if name := request.form.get('connect'):
                 if record := db_session.get(RpiOrders, name):
                     record.name = name
-                    record.passwd = request.form.get('passwd')
-                    record.host = request.form.get('host')
-                    record.port = request.form.get('port')
-                    record.from_port = request.form.get('from_port')
-                    record.to_port = request.form.get('to_port')
-                    record.username = request.form.get('username')
+                    record.passwd = request.form.get(f'{name}_passwd')
+                    record.host = request.form.get(f'{name}_host')
+                    record.port = request.form.get(f'{name}_port')
+                    record.from_port = request.form.get(f'{name}_from_port')
+                    record.to_port = request.form.get(f'{name}_to_port')
+                    record.username = request.form.get(f'{name}_username')
             elif name := request.form.get('remove'):
                 if record := db_session.get(RpiOrders, name):
                     db_session.delete(record)

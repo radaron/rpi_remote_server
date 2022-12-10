@@ -20,7 +20,7 @@ class RpiOrders(Base):
     port = db.Column(db.Integer)
     from_port = db.Column(db.Integer)
     to_port = db.Column(db.Integer)
-    polled_date = db.Column(db.DateTime)
+    polled_time = db.Column(db.Integer)
     passwd = db.Column(db.String(50))
 
 
