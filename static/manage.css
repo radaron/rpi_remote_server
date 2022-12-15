@@ -2,6 +2,30 @@ body {
     background-color: rgb(223, 74, 74);
 }
 
-.port-field {
-    width: 150px;
+table {
+    font-family: futura-pt, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    border-collapse: collapse;
+    width: 100%;
+    border-radius: 15px;
+    overflow:hidden
+}
+
+.table > :not(caption) > * > * {
+    /* This "magic" needs for removing line bottom of rounded table */
+    border-bottom-width: 0px;
+}
+
+.form-port {
+    width: 100px
+}
+
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
 }
