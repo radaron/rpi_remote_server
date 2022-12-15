@@ -47,8 +47,6 @@
 
 
     function updateStatus(data){
-        var date_obj = new Date();
-        var time = date_obj.getTime() / 1000
         var image_name = ""
 
         if (JSON.stringify(data.static) != JSON.stringify(current_data))
@@ -57,16 +55,10 @@
         }
 
         for (const element of data.dynamic) {
-            if ((time-element.polled_time) > 60) {
+            if ((data.current_time-element.polled_time) > 60) {
                 image_name = "red"
             } else {
                 image_name = "green"
-            }
-
-            if (!document.getElementById(element.name+"_status")) {
-                updateAll(data)
-                updateStatus(data)
-                return
             }
             document.getElementById(element.name+"_status").innerHTML = '<img src="/rpi/static/'+image_name+'.png">';
         }

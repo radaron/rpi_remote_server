@@ -50,9 +50,12 @@ def manage_data():
             for data_type in MANGE_KEYS:
                 if data_type not in resp:
                     resp[data_type] = []
-                resp[data_type].append({k: getattr(record, k) for k in MANGE_KEYS[data_type]})
+                resp[data_type].append({k: getattr(record, k) if getattr(record, k)
+                                       else "" for k in MANGE_KEYS[data_type]})
 
         db_session.close()
+        resp["current_time"] = get_time()
+
         return jsonify(resp)
     else:
         return abort(401)
