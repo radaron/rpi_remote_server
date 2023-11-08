@@ -25,7 +25,7 @@ def get_order():
     resp = {}
 
     if record := db_session.get(RpiOrders, sender_name):
-        if all([bool(getattr(record, value)) for value in ORDER_KEYS]):
+        if all(bool(getattr(record, value)) for value in ORDER_KEYS):
             resp = {k: getattr(record, k) for k in ORDER_KEYS}
         record.polled_time = get_time()
     else:
@@ -47,18 +47,17 @@ def manage_data():
         records = db_session.query(RpiOrders).all()
 
         for record in records:
-            for data_type in MANGE_KEYS:
+            for data_type, values in MANGE_KEYS.items():
                 if data_type not in resp:
                     resp[data_type] = []
                 resp[data_type].append({k: getattr(record, k) if getattr(record, k)
-                                       else "" for k in MANGE_KEYS[data_type]})
+                                       else "" for k in values})
 
         db_session.close()
         resp["current_time"] = get_time()
 
         return jsonify(resp)
-    else:
-        return abort(401)
+    return abort(401)
 
 
 @app.route("/rpi/manage", methods=['POST', 'GET'])
@@ -66,13 +65,9 @@ def manage():
     if session.get("username"):
 
         if request.method == "GET":
-            db_session = get_session()
-
-            records = db_session.query(RpiOrders).all()
-
-            db_session.close()
             return render_template('manage.html')
-        else:
+
+        if request.method == "POST":
             db_session = get_session()
 
             if name := request.form.get('connect'):
@@ -92,9 +87,7 @@ def manage():
             db_session.close()
             return redirect("/rpi/manage")
 
-    else:
-        return redirect("/rpi/manage/login")
-
+    return redirect("/rpi/manage/login")
 
 @app.route("/rpi/manage/login", methods=['POST', 'GET'])
 def manage_login():

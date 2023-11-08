@@ -9,4 +9,4 @@ def get_secret_key():
 
 
 def validate_fields_exists(request_form, values):
-    return all([request_form.get(value, None) for value in values])
+    return all(request_form.get(value, None) for value in values)

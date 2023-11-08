@@ -3,4 +3,6 @@ secret
 *.code-workspace
 .vscode
 __pycache__
-data/*.db
+*/data/*.db
+*/data/*.sql
+*.egg-info
