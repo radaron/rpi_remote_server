@@ -9,9 +9,7 @@ app.secret_key = get_secret_key()
 init_db()
 
 ORDER_KEYS = ("host", "port", "from_port", "to_port", "passwd", "username")
-MANGE_KEYS = {"static": ("name", "host", "port", "from_port", "to_port", "passwd", "username"),
-              "dynamic": ("name", "polled_time")
-}
+MANGE_KEYS = ("name", "polled_time")
 
 
 @app.route("/rpi/order", methods=['GET'])
@@ -39,25 +37,18 @@ def get_order():
 
 @app.route("/rpi/manage/data", methods=['GET'])
 def manage_data():
-    if session.get("username"):
-        db_session = get_session()
+    db_session = get_session()
+    resp = {"data" : []}
+    records = db_session.query(RpiOrders).all()
 
-        resp = {}
+    for record in records:
+        resp['data'].append({k: getattr(record, k) if getattr(record, k)
+                                else "" for k in MANGE_KEYS})
 
-        records = db_session.query(RpiOrders).all()
+    db_session.close()
+    resp["current_time"] = get_time()
 
-        for record in records:
-            for data_type, values in MANGE_KEYS.items():
-                if data_type not in resp:
-                    resp[data_type] = []
-                resp[data_type].append({k: getattr(record, k) if getattr(record, k)
-                                       else "" for k in values})
-
-        db_session.close()
-        resp["current_time"] = get_time()
-
-        return jsonify(resp)
-    return abort(401)
+    return jsonify(resp)
 
 
 @app.route("/rpi/manage", methods=['POST', 'GET'])
@@ -89,6 +80,7 @@ def manage():
 
     return redirect("/rpi/manage/login")
 
+
 @app.route("/rpi/manage/login", methods=['POST', 'GET'])
 def manage_login():
     if session.get("username"):
@@ -111,6 +103,7 @@ def manage_login():
 
     db_session.close()
     return render_template("login.html", message="Invalid username or password!")
+
 
 @app.route("/rpi/manage/logout")
 def manage_logout():
