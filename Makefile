@@ -44,6 +44,7 @@ build-frontend:
 	cp frontend/build/index.html rpi_remote_server/templates/index.html
 	cp -r frontend/build/static/* rpi_remote_server/static/.
 	sed -i'.bak' -e 's/\/static/\/rpi\/static/g' rpi_remote_server/templates/index.html
+	sed -i'.bak' -e 's/\/favicon.ico/\/rpi\/favicon.ico/g' rpi_remote_server/templates/index.html
 
 start-dev:
 	@$(ACTIVATE) && python -m rpi_remote_server.app

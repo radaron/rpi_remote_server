@@ -1,5 +1,5 @@
 from datetime import timedelta
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_jwt_extended import JWTManager
 from rpi_remote_server.database import init_db
 from rpi_remote_server.util import get_secret_key
@@ -18,6 +18,10 @@ app.register_blueprint(pages)
 app.after_request(refresh_expiring_jwts)
 init_db()
 
+@app.route('/rpi/favicon.ico')
+def favicon():
+    return send_from_directory('images', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
 
 if __name__ == "__main__":
-    app.run(host = "0.0.0.0", port = 8080, debug = True)
+    app.run(host = "127.0.0.1", port = 8080, debug = True)
