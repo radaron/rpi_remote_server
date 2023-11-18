@@ -6,7 +6,7 @@ ACTIVATE = . .venv/bin/activate
 virtualenv: .venv
 
 pip: virtualenv
-	$(ACTIVATE) && pip install --upgrade pip pip-tools
+	@$(ACTIVATE) && pip install --upgrade pip pip-tools
 
 reqs-prod: pip
 	@$(ACTIVATE) && pip install -r requirements.txt
@@ -14,10 +14,13 @@ reqs-prod: pip
 reqs-dev: pip
 	@$(ACTIVATE) && pip install -r requirements-dev.txt
 
-install: virtualenv reqs-dev
+install: virtualenv reqs-prod
+
+install-dev: virtualenv reqs-dev
+	cd frontend && pnpm install
 
 lint: reqs-dev
-	@$(ACTIVATE) && pylint *.py
+	@$(ACTIVATE) && pylint rpi_remote_server
 
 lock: pip
 	@$(ACTIVATE) && pip-compile --generate-hashes --no-emit-index-url --output-file=requirements.txt \

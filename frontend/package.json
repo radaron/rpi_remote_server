@@ -16,6 +16,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "lint": "standard src/",
+    "lint:fix": "standard --fix src/",
     "eject": "react-scripts eject"
   },
   "proxy": "http://localhost:8080",
@@ -36,5 +38,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "standard": "^17.1.0"
   }
 }
