@@ -4,3 +4,7 @@ secret
 .vscode
 __pycache__
 data/*.db
+data/*.sql
+*.egg-info
+build
+*.bak

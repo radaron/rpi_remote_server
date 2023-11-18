@@ -35,7 +35,7 @@ table_objects = [RpiOrders.__table__, Authentication.__table__]
 
 def init_db():
     global ENGINE
-    db_path = path.abspath(path.join(path.dirname(__file__), "data/database.db"))
+    db_path = path.abspath(path.join(path.dirname(__file__), path.pardir, "data/database.db"))
     ENGINE = create_engine(f"sqlite:///{db_path}")
     Base.metadata.create_all(ENGINE, tables=table_objects)
 

@@ -1,7 +1,7 @@
 import sys
 import getpass
-from database import init_db, get_session, Authentication
-from authentication import generate_salt, hash_password
+from rpi_remote_server.database import init_db, get_session, Authentication
+from rpi_remote_server.authentication import generate_salt, hash_password
 
 def main():
     init_db()

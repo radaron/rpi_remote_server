@@ -1,26 +1,20 @@
-[tool.poetry]
-name = "rpi-remote-server"
+[project]
+name = "rpi_remote_server"
 version = "0.1.0"
-description = ""
-authors = ["Radics Aron <radics.aron.jozsef@gmail.com>"]
 readme = "README.md"
-packages = [{include = "tools"}]
+dependencies = [
+    "Flask==3.0.0",
+    "paramiko==2.12.0",
+    "requests==2.28.1",
+    "gunicorn==20.1.0",
+    "SQLAlchemy==1.4.44",
+    "Flask-JWT-Extended==4.5.3",
+]
 
-[tool.poetry.dependencies]
-python = "^3.7"
-Flask = "^2.2.2"
-paramiko = "^2.12.0"
-requests = "^2.28.1"
-gunicorn = "^20.1.0"
-SQLAlchemy = "^1.4.44"
-UPnPy = "^1.1.8"
+[tool.setuptools]
+py-modules = []
 
-[tool.poetry.scripts]
-forward = 'tools.forward:main'
-add-user = 'tools.add_user:main'
-generate-secret = 'tools.generate_secret:main'
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[project.optional-dependencies]
+dev = [
+  "pylint==3.0.2",
+]

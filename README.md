@@ -5,18 +5,22 @@
 ### Prerequisites
 * rust
 * libffi
-* poetry
 * gcc
 * openssl
 
-### Poetry install
+### Install dependencies
 ```
-poetry install
+make install
 ```
 
 ### Generate secret
 ```
-poetry run generate-secret
+make generate-secret
+```
+
+### Generate user
+```
+make add-user
 ```
 
 ### Create service
@@ -33,7 +37,7 @@ User=${USER}
 Type=simple
 Environment="LC_ALL=C.UTF-8"
 Environment="LANG=C.UTF-8"
-ExecStart=${HOME}/.local/bin/poetry run gunicorn
+ExecStart=$(pwd)/.venv/bin/gunicorn
 WorkingDirectory=$(pwd)
 Restart=on-failure
 [Install]
@@ -45,17 +49,42 @@ sudo systemctl enable rpi-remote-server.service
 sudo systemctl start rpi-remote-server.service
 ```
 
-## Generate user for manage
+## Usage
+
+### Start port forwarder
 ```
-poetry run add-user
+make forward NAME=<NAME> PORT=<PORT>
 ```
 
-## Start port forwarder
-```
-poetry run forvard <PORT>
-```
-
-## Check logs
+### Check logs
 ```
 journalctl -fu rpi-remote-server
+```
+
+## Development
+
+### Install dev requirements
+
+```
+make install-dev
+```
+
+### Lint code
+Backend
+```
+make lint
+```
+Frontend
+```
+cd frontend && pnpm lint
+```
+
+### Start dev
+Backend
+```
+make start-dev
+```
+Frontend
+```
+cd frontend && pnpm start
 ```
