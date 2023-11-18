@@ -1,7 +1,7 @@
 # pylint: disable=invalid-name
 
 wsgi_app = "rpi_remote_server.app:app"
-bind = "0.0.0.0:8080"
+bind = "localhost:8888"
 workers = 4
 proc_name = "rpi_remote_server"
 

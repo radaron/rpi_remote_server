@@ -37,7 +37,7 @@ User=${USER}
 Type=simple
 Environment="LC_ALL=C.UTF-8"
 Environment="LANG=C.UTF-8"
-ExecStart=${HOME}/.venv/bin/gunicorn
+ExecStart=$(pwd)/.venv/bin/gunicorn
 WorkingDirectory=$(pwd)
 Restart=on-failure
 [Install]
@@ -53,7 +53,7 @@ sudo systemctl start rpi-remote-server.service
 
 ### Start port forwarder
 ```
-make forvard NAME=<NAME> PORT=<PORT>
+make forward NAME=<NAME> PORT=<PORT>
 ```
 
 ### Check logs

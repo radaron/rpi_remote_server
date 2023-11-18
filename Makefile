@@ -9,10 +9,10 @@ pip: virtualenv
 	@$(ACTIVATE) && pip install --upgrade pip pip-tools
 
 reqs-prod: pip
-	@$(ACTIVATE) && pip install -r requirements.txt
+	@$(ACTIVATE) && pip install --no-deps -r requirements.txt
 
 reqs-dev: pip
-	@$(ACTIVATE) && pip install -r requirements-dev.txt
+	@$(ACTIVATE) && pip install --no-deps -r requirements-dev.txt
 
 install: virtualenv reqs-prod
 
