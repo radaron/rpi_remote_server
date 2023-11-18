@@ -14,7 +14,7 @@ reqs-prod: pip
 reqs-dev: pip
 	@$(ACTIVATE) && pip install -r requirements-dev.txt
 
-quickstart: virtualenv reqs-dev
+install: virtualenv reqs-dev
 
 lint: reqs-dev
 	@$(ACTIVATE) && pylint *.py
@@ -34,5 +34,13 @@ forward:
 generate-secret:
 	@$(ACTIVATE) && python -m tools.generate_secret
 
-start-backend:
-	@$(ACTIVATE) && python -m main
+build-frontend:
+	cd frontend && pnpm build
+	rm -rf rpi_remote_server/templates rpi_remote_server/static
+	mkdir -p rpi_remote_server/templates rpi_remote_server/static
+	cp frontend/build/index.html rpi_remote_server/templates/index.html
+	cp -r frontend/build/static/* rpi_remote_server/static/.
+	sed -i'.bak' -e 's/\/static/\/rpi\/static/g' rpi_remote_server/templates/index.html
+
+start-dev:
+	@$(ACTIVATE) && python -m rpi_remote_server.app

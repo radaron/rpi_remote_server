@@ -8,7 +8,7 @@ import argparse
 import requests
 import upnpy
 import random
-from database import init_db, get_session, RpiOrders
+from rpi_remote_server.database import init_db, get_session, RpiOrders
 
 HOST_KEY = paramiko.RSAKey.generate(1024)
 SERVER_ADDRESS = "0.0.0.0"
@@ -141,39 +141,38 @@ def client_handler(client_socket):
         session_transport.close()
     else:
         print("[*] Success - SSH channel active")
-        with UpnpWrapper(server.to_port) as (ext_ip, ext_port):
-            print(f"[*] Waiting conenction on {ext_ip}, {ext_port}")
-            while session_chan.active:
+        print(f"[*] Waiting conenction on {UpnpWrapper.get_lan_ip_address()}, {server.to_port}")
+        while session_chan.active:
+            try:
                 try:
-                    try:
-                        client_tunnel_socket, addr = server.listen.accept()
-                    except:
-                        print("[*] Closing associated channels")
-                        session_transport.close()
-                        break
-                    tunnel_chan = session_transport.open_forwarded_tcpip_channel(client_tunnel_socket.getsockname(), client_tunnel_socket.getpeername())
-                    while True:
-                        r, w, x = select.select([client_tunnel_socket, tunnel_chan], [], [])
-                        if client_tunnel_socket in r:
-                            data = client_tunnel_socket.recv(1024)
-                            if len(data) == 0:
-                                break
-                            print(f"[*] Sending {len(data)} bytes via SSH Channel")
-                            tunnel_chan.send(data)
-                        if tunnel_chan in r:
-                            data = tunnel_chan.recv(1024)
-                            if len(data) == 0:
-                                break
-                            print(f"[*] Sending {len(data)} bytes via TCP Channel")
-                            client_tunnel_socket.send(data)
-                except (paramiko.SSHException, Exception) as err:
-                    print(f"[*] {err}")
-                    try:
-                        print("[*] Closing associated sockets and channels")
-                        client_tunnel_socket.close()
-                        session_transport.close()
-                    except:
-                        pass
+                    client_tunnel_socket, addr = server.listen.accept()
+                except:
+                    print("[*] Closing associated channels")
+                    session_transport.close()
+                    break
+                tunnel_chan = session_transport.open_forwarded_tcpip_channel(client_tunnel_socket.getsockname(), client_tunnel_socket.getpeername())
+                while True:
+                    r, w, x = select.select([client_tunnel_socket, tunnel_chan], [], [])
+                    if client_tunnel_socket in r:
+                        data = client_tunnel_socket.recv(1024)
+                        if len(data) == 0:
+                            break
+                        print(f"[*] Sending {len(data)} bytes via SSH Channel")
+                        tunnel_chan.send(data)
+                    if tunnel_chan in r:
+                        data = tunnel_chan.recv(1024)
+                        if len(data) == 0:
+                            break
+                        print(f"[*] Sending {len(data)} bytes via TCP Channel")
+                        client_tunnel_socket.send(data)
+            except (paramiko.SSHException, Exception) as err:
+                print(f"[*] {err}")
+                try:
+                    print("[*] Closing associated sockets and channels")
+                    client_tunnel_socket.close()
+                    session_transport.close()
+                except:
+                    pass
 
 def main():
     parser = argparse.ArgumentParser(description='Start port forwarding with remote clients.')
