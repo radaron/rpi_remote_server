@@ -1,7 +1,7 @@
 from flask import Blueprint, abort, request, jsonify
 from flask_jwt_extended import jwt_required
-from rpi_remote_server.database import get_session, RpiOrders 
-from rpi_remote_server.util import get_time 
+from rpi_remote_server.database import get_session, RpiOrders
+from rpi_remote_server.util import get_time
 
 ORDER_KEYS = ("host", "port", "from_port", "to_port", "passwd", "username")
 MANGE_KEYS = ("name", "polled_time")

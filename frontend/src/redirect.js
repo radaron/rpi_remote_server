@@ -1,7 +1,7 @@
 export const redirectToLogin = () => {
-  window.location.replace("/rpi/login");
+  window.location.replace('/rpi/login')
 }
 
 export const redirectToManage = () => {
-  window.location.replace("/rpi/manage");
+  window.location.replace('/rpi/manage')
 }

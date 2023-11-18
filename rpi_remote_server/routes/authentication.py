@@ -1,9 +1,9 @@
-from flask import Blueprint, request, jsonify
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
+from flask import Blueprint, request, jsonify
 from flask_jwt_extended import (
-    create_access_token, 
-    get_jwt, 
+    create_access_token,
+    get_jwt,
     get_jwt_identity,
     unset_jwt_cookies
 )
@@ -36,18 +36,16 @@ def logout():
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
     return response
-  
+
 def refresh_expiring_jwts(response):
     try:
         exp_timestamp = get_jwt()["exp"]
         target_timestamp = datetime.timestamp(datetime.now() + timedelta(minutes=50))
-        print(datetime.fromtimestamp(exp_timestamp), datetime.fromtimestamp(target_timestamp), target_timestamp > exp_timestamp)
         if target_timestamp > exp_timestamp:
-            print("refreshing token")
             access_token = create_access_token(identity=get_jwt_identity())
             data = response.get_json()
-            if type(data) is dict:
-                data["access_token"] = access_token 
+            if isinstance(data, dict):
+                data["access_token"] = access_token
                 response.data = json.dumps(data)
         return response
     except (RuntimeError, KeyError):

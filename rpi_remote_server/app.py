@@ -1,7 +1,7 @@
-from flask import Flask 
 from datetime import timedelta
+from flask import Flask
 from flask_jwt_extended import JWTManager
-from rpi_remote_server.database import init_db 
+from rpi_remote_server.database import init_db
 from rpi_remote_server.util import get_secret_key
 from rpi_remote_server.routes.api import api
 from rpi_remote_server.routes.authentication import authentication, refresh_expiring_jwts

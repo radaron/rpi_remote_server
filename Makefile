@@ -20,7 +20,7 @@ install-dev: virtualenv reqs-dev
 	cd frontend && pnpm install
 
 lint: reqs-dev
-	@$(ACTIVATE) && pylint rpi_remote_server
+	@$(ACTIVATE) && PYTHONPATH=. pylint rpi_remote_server
 
 lock: pip
 	@$(ACTIVATE) && pip-compile --generate-hashes --no-emit-index-url --output-file=requirements.txt \
