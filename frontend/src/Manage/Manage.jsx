@@ -90,7 +90,7 @@ const ItemList = ({ data, token, setToken, onDataChanged }) => {
         <Col md={1}>{'CPU (%)'}</Col>
         <Col md={2}>{'Memory (%)'}</Col>
         <Col md={1}>{'Disk (%)'}</Col>
-        <Col md={2}>{'Temperature (%)'}</Col>
+        <Col md={2}>{'Temperature (°C)'}</Col>
         <Col md={1}>Status</Col>
         <Col md={1}/>
       </Row>
