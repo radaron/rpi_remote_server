@@ -1,37 +1,57 @@
 # pylint: disable=global-statement
 
 from os import path
-import sqlalchemy as db
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import String, Integer, Column
+from sqlalchemy import create_engine, ForeignKey 
+from sqlalchemy.orm import (
+  sessionmaker, relationship, Mapped, 
+  mapped_column, declarative_base
+)
 
 
 ENGINE = None
 Base = declarative_base()
 
 
-class RpiOrders(Base):
-    __tablename__ = 'rpi_orders'
+class RpiOrder(Base):
+    __tablename__ = 'rpi_order'
 
-    name = db.Column(db.String(50), primary_key=True)
-    host = db.Column(db.String(50))
-    username = db.Column(db.String(50))
-    port = db.Column(db.Integer)
-    from_port = db.Column(db.Integer)
-    to_port = db.Column(db.Integer)
-    polled_time = db.Column(db.Integer)
-    passwd = db.Column(db.String(50))
+    name: Mapped[str] = mapped_column(String(50), primary_key=True)
+    host = Column(String(50))
+    username = Column(String(50))
+    port = Column(Integer)
+    from_port = Column(Integer)
+    to_port = Column(Integer)
+    polled_time = Column(Integer)
+    passwd = Column(String(50))
+    metric: Mapped["RpiMetric"] = relationship(back_populates="rpi_order", 
+                                               cascade="all, delete-orphan")
+
+
+
+class RpiMetric(Base):
+    __tablename__ = 'rpi_metric'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(ForeignKey("rpi_order.name", 
+                                                 ondelete='CASCADE', 
+                                                 onupdate='CASCADE'))
+    rpi_order: Mapped["RpiOrder"] = relationship(back_populates="metric")
+    uptime = Column(Integer)
+    cpu_usage = Column(Integer)
+    memory_usage = Column(Integer)
+    disk_usage = Column(Integer)
+    temperature = Column(Integer)
 
 
 class Authentication(Base):
     __tablename__ = 'authentication'
 
-    username = db.Column(db.String(50), primary_key=True)
-    password = db.Column(db.String(50))
-    salt = db.Column(db.String(50))
+    username = Column(String(50), primary_key=True)
+    password = Column(String(50))
+    salt = Column(String(50))
 
-table_objects = [RpiOrders.__table__, Authentication.__table__]
+table_objects = [RpiOrder.__table__, Authentication.__table__, RpiMetric.__table__]
 
 def init_db():
     global ENGINE
@@ -43,3 +63,14 @@ def init_db():
 def get_session():
     ses = sessionmaker(bind=ENGINE)
     return ses()
+
+if __name__ == "__main__":
+    init_db()
+    ses = get_session()
+    order = RpiOrder(name="test")
+    order.metric = RpiMetric()
+    ses.add(order)
+    ses.commit()
+    o = ses.get(RpiOrder, 'test')
+    # ses.delete(o)
+    ses.commit()
