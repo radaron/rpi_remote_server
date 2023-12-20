@@ -27,20 +27,31 @@ const fetchData = async (token, setToken, onDataChanged) => {
 }
 
 const ItemList = ({ data, token, setToken, onDataChanged }) => {
-  const deleteItem = (name) => () => {
-    fetch('/rpi/api/data', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ name })
-    }).then(
-      res => fetchData(token, setToken, onDataChanged)
-    )
-      .catch(err => console.log(err))
+  const deleteItem = (name) => async () => {
+    try {
+      await fetch('/rpi/api/data', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ name })
+      })
+      fetchData(token, setToken, onDataChanged)
+    } catch (error) {
+      console.log(error)
+      }
   }
-  const getItem = (name, polledTime, currentTime) => {
+  const getItem = (
+      name, 
+      polledTime, 
+      currentTime,
+      uptime,
+      cpuUsage,
+      memoryUsage,
+      diskUsage,
+      temperature
+    ) => {
     const getStatusCss = (currentTime, polledTime) => {
       const statusMap = {
         true: 'statusGreen',
@@ -50,12 +61,17 @@ const ItemList = ({ data, token, setToken, onDataChanged }) => {
     }
 
     return (
-      <Row className={styles.element} xs='3' key={name}>
-        <Col md={5}>{name}</Col>
-        <Col md={5}>
+      <Row className={styles.element} key={name}>
+        <Col md={2}>{name}</Col>
+        <Col md={2}>{uptime}</Col>
+        <Col md={1}>{cpuUsage}</Col>
+        <Col md={2}>{memoryUsage}</Col>
+        <Col md={1}>{diskUsage}</Col>
+        <Col md={2}>{temperature}</Col>
+        <Col md={1}>
           <div className={styles[`status--${getStatusCss(currentTime, polledTime)}`]} />
         </Col>
-        <Col className={styles.xbutton} md={2}>
+        <Col className={styles.xbutton} md={1}>
           <Button
             variant='outline-danger'
             onClick={deleteItem(name)}
@@ -68,13 +84,27 @@ const ItemList = ({ data, token, setToken, onDataChanged }) => {
   }
   return (
     <div>
-      <Row className={styles.header} xs='3'>
-        <Col md={5}>Name</Col>
-        <Col md={5}>Status</Col>
-        <Col md={2} />
+      <Row className={styles.header}>
+        <Col md={2}>Name</Col>
+        <Col md={2}>{'Uptime (hour)'}</Col>
+        <Col md={1}>{'CPU (%)'}</Col>
+        <Col md={2}>{'Memory (%)'}</Col>
+        <Col md={1}>{'Disk (%)'}</Col>
+        <Col md={2}>{'Temperature (°C)'}</Col>
+        <Col md={1}>Status</Col>
+        <Col md={1}/>
       </Row>
       {data.data && data.data
-        .map(val => getItem(val.name, val.polled_time, data.current_time))}
+        .map(val => getItem(
+          val.name, 
+          val.polled_time, 
+          data.current_time, 
+          val.uptime, 
+          val.cpu_usage, 
+          val.memory_usage, 
+          val.disk_usage, 
+          val.temperature
+        ))}
     </div>
   )
 }
