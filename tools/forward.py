@@ -35,7 +35,7 @@ def update_db_record(name, username, password, host, port, from_port, to_port):
 
 def delete_db_record(name):
     db_session = get_session()
-    if record := db_session.get(RpiOrders, name):
+    if record := db_session.get(RpiOrder, name):
         db_session.delete(record)
         db_session.commit()
     db_session.close()
