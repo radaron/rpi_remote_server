@@ -8,7 +8,7 @@ import argparse
 import requests
 import upnpy
 import random
-from rpi_remote_server.database import init_db, get_session, RpiOrders
+from rpi_remote_server.database import init_db, get_session, RpiOrder
 
 HOST_KEY = paramiko.RSAKey.generate(1024)
 SERVER_ADDRESS = "0.0.0.0"
@@ -21,7 +21,7 @@ SERVER_PASSWORD = str(uuid4().hex)[:5]
 
 def update_db_record(name, username, password, host, port, from_port, to_port):
     db_session = get_session()
-    if record := db_session.get(RpiOrders, name):
+    if record := db_session.get(RpiOrder, name):
         record.name = name
         record.username = username
         record.passwd = password
