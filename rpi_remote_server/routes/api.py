@@ -61,7 +61,7 @@ def manage_data():
     if verify_username(session.get('username')):
         db_session = get_session()
         resp = {"data" : []}
-        orders = db_session.query(RpiOrder).all()
+        orders = db_session.query(RpiOrder).order_by(RpiOrder.name).all()
 
         for order in orders:
             resp['data'].append({k: getattr(order, k, "") for k in MANGE_KEYS})
