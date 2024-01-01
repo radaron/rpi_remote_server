@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session, redirect
+from rpi_remote_server.authentication import verify_username
 
 
 pages = Blueprint('pages', __name__)
@@ -10,4 +11,6 @@ def login_page():
 
 @pages.route("/rpi/manage", methods=['GET'])
 def manage_page():
-    return render_template("index.html")
+    if verify_username(session.get('username')):
+        return render_template("index.html")
+    return redirect("/rpi/login")
