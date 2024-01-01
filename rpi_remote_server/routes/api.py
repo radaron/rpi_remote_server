@@ -1,7 +1,7 @@
-from flask import Blueprint, abort, request, jsonify
-from flask_jwt_extended import jwt_required
+from flask import Blueprint, abort, request, jsonify, session
 from rpi_remote_server.database import get_session, RpiOrder, RpiMetric
 from rpi_remote_server.util import get_time
+from rpi_remote_server.authentication import verify_username
 
 ORDER_KEYS = ("host", "port", "from_port", "to_port", "passwd", "username")
 METRIC_KEYS = ("uptime", "cpu_usage", "memory_usage", "disk_usage", "temperature")
@@ -57,37 +57,39 @@ def get_order():
 
 
 @api.route("/rpi/api/data", methods=['GET'])
-@jwt_required()
 def manage_data():
-    db_session = get_session()
-    resp = {"data" : []}
-    orders = db_session.query(RpiOrder).all()
+    if verify_username(session.get('username')):
+        db_session = get_session()
+        resp = {"data" : []}
+        orders = db_session.query(RpiOrder).all()
 
-    for order in orders:
-        resp['data'].append({k: getattr(order, k, "") for k in MANGE_KEYS})
-        if order.metric:
-            resp['data'][-1].update({k: getattr(order.metric, k, "") for k in METRIC_KEYS})
+        for order in orders:
+            resp['data'].append({k: getattr(order, k, "") for k in MANGE_KEYS})
+            if order.metric:
+                resp['data'][-1].update({k: getattr(order.metric, k, "") for k in METRIC_KEYS})
 
-    db_session.close()
-    resp["current_time"] = get_time()
+        db_session.close()
+        resp["current_time"] = get_time()
 
-    return jsonify(resp)
+        return jsonify(resp)
+    return jsonify({"msg": "Unauthorized"}), 401
 
 
 @api.route("/rpi/api/data", methods=['DELETE'])
-@jwt_required()
 def delete_data():
-    if data := request.json:
-        db_session = get_session()
+    if verify_username(session.get('username')):
+        if data := request.json:
+            db_session = get_session()
 
-        if order_record := db_session.get(RpiOrder, data.get('name', '')):
-            db_session.delete(order_record)
-            db_session.commit()
-            db_session.close()
-        else:
-            db_session.close()
-            return "No Content", 204
+            if order_record := db_session.get(RpiOrder, data.get('name', '')):
+                db_session.delete(order_record)
+                db_session.commit()
+                db_session.close()
+            else:
+                db_session.close()
+                return "No Content", 204
 
-        return jsonify({"resp": "Ok"}), 200
+            return jsonify({"resp": "Ok"}), 200
 
-    return jsonify({"resp": "No content"}), 204
+        return jsonify({"resp": "No content"}), 204
+    return jsonify({"msg": "Unauthorized"}), 401
