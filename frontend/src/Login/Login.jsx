@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import { Container, Form, Button, FloatingLabel } from 'react-bootstrap'
 import styles from './Login.module.scss'
-import { redirectToManage } from '../redirect'
 
-function Login ({ setToken }) {
+function Login () {
   const [errorText, setErrorText] = useState(null)
   const [loginForm, setloginForm] = useState({
     username: '',
@@ -12,7 +11,7 @@ function Login ({ setToken }) {
   const logMeIn = async (event) => {
     event.preventDefault()
     try {
-      const response = await fetch('/rpi/token', {
+      const response = await fetch('/rpi/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginForm)
@@ -20,9 +19,9 @@ function Login ({ setToken }) {
       if (response.status !== 200) {
         throw new Error(response.status)
       }
-      const data = await response.json()
-      setToken(data.access_token)
-      redirectToManage()
+      if (response.redirected) {
+        window.location.href = response.url;
+      }
     } catch(error) {
       if (error.message === '401') {
         setErrorText('Invalid username or password')

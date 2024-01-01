@@ -3,41 +3,33 @@ import { Container, Button, Navbar, Row, Col } from 'react-bootstrap'
 import styles from './Manage.module.scss'
 import { ReactComponent as ReactLogo } from '../xicon.svg'
 import { ReactComponent as RpiIcon } from '../rpi.svg'
-import { redirectToLogin } from '../redirect'
 
-const fetchData = async (token, setToken, onDataChanged) => {
-  return fetch('/rpi/api/data', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    }
-  })
-    .then(res => {
-      if (res.status === 401) {
-        redirectToLogin()
+const fetchData = async (onDataChanged) => {
+  try {
+    const reponse = await fetch('/rpi/api/data', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
       }
-      return res.json()
     })
-    .then(data => {
-      onDataChanged(data)
-      data.access_token && setToken(data.access_token)
-    })
-    .catch(err => { console.log(err) })
+    const data = await reponse.json()
+    onDataChanged(data)
+  } catch(err) {
+    console.log(err)
+  }
 }
 
-const ItemList = ({ data, token, setToken, onDataChanged }) => {
+const ItemList = ({ data, onDataChanged }) => {
   const deleteItem = (name) => async () => {
     try {
       await fetch('/rpi/api/data', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ name })
       })
-      fetchData(token, setToken, onDataChanged)
+      fetchData(onDataChanged)
     } catch (error) {
       console.log(error)
       }
@@ -109,27 +101,28 @@ const ItemList = ({ data, token, setToken, onDataChanged }) => {
   )
 }
 
-const Manage = ({ setToken, token, removeToken }) => {
+const Manage = () => {
   const [data, setData] = useState({})
-  token || redirectToLogin()
 
-  const logOut = () => {
-    fetch('/rpi/logout', { method: 'POST' })
-      .then(res => {
-        removeToken()
-        redirectToLogin()
-      }).catch(err => console.log(err))
+  const logOut = async () => {
+    const response = await fetch('/rpi/logout', { 
+      method: 'POST',
+    })
+    if (response.redirected) {
+      window.location.href = response.url;
+      return;
+   }
   }
   const onDataChanged = (data) => {
     setData(data)
   }
   useEffect(() => {
-    fetchData(token, setToken, onDataChanged)
+    fetchData(onDataChanged)
     const interval = setInterval(() => {
-      fetchData(token, setToken, onDataChanged)
+      fetchData(onDataChanged)
     }, 5000)
     return () => clearInterval(interval)
-  }, [token, setToken])
+  }, [])
 
   return (
     <>
@@ -144,8 +137,6 @@ const Manage = ({ setToken, token, removeToken }) => {
           <ItemList
             data={data}
             onDataChanged={onDataChanged}
-            token={token}
-            setToken={setToken}
           />
         </Container>
       </Container>
