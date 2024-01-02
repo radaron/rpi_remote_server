@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, session
 from rpi_remote_server.database import init_db
 from rpi_remote_server.util import get_secret_key
 from rpi_remote_server.routes.api import api
@@ -16,6 +16,11 @@ init_db()
 @app.route('/rpi/favicon.ico')
 def favicon():
     return send_from_directory('images', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
 
 
 if __name__ == "__main__":
