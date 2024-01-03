@@ -1,0 +1,36 @@
+version: '3'
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./secret:/app/secret
+    command: ["./wait-for-it.sh", "db:3306", "--", "gunicorn"]
+    environment:
+      MYSQL_HOST: database
+      MYSQL_DATABASE: rpi-remote
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+      SERVER_ADDRESS: radaron.hu
+    ports:
+      - "8080:8080"
+      - "40000-41000:40000-41000"
+    depends_on:
+      - database
+    networks:
+      - app_network
+  database:
+    image: mysql:8.3.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: rpi-remote
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    networks:
+      - app_network
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+networks:
+  app_network:
+    driver: bridge

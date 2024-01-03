@@ -3,10 +3,10 @@
 ## Installation
 
 ### Prerequisites
-* rust
-* libffi
-* gcc
-* openssl
+```
+sudo apt install build-essential libffi-dev gcc pkg-config python3-dev python3-pip libssl-dev openssl
+```
+Install rust: https://www.rust-lang.org/tools/install
 
 ### Install dependencies
 ```

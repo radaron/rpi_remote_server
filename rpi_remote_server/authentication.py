@@ -6,7 +6,7 @@ def generate_salt():
 
 
 def validate_password(password, record):
-    return bcrypt.checkpw(password, record.password)
+    return bcrypt.checkpw(password.encode(), record.password.encode())
 
 
 def hash_password(password, salt):

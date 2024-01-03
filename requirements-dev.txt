@@ -244,6 +244,10 @@ pylint==3.0.2 \
     --hash=sha256:0d4c286ef6d2f66c8bfb527a7f8a629009e42c99707dec821a03e1b51a4c1496 \
     --hash=sha256:60ed5f3a9ff8b61839ff0348b3624ceeb9e6c2a92c514d81c9cc273da3b6bcda
     # via rpi_remote_server (pyproject.toml)
+pymysql==1.1.0 \
+    --hash=sha256:4f13a7df8bf36a51e81dd9f3605fede45a4878fe02f9236349fd82a3f0612f96 \
+    --hash=sha256:8969ec6d763c856f7073c4c64662882675702efcb114b4bcbb955aea3a069fa7
+    # via rpi_remote_server (pyproject.toml)
 pynacl==1.5.0 \
     --hash=sha256:06b8f6fa7f5de8d5d2f7573fe8c863c051225a27b61e6860fd047b1775807858 \
     --hash=sha256:0c84947a22519e013607c9be43706dd42513f9e6ae5d39d3613ca1e142fba44d \

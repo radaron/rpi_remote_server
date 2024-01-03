@@ -1,3 +1,4 @@
+import os
 import socket
 from uuid import uuid4
 import threading
@@ -110,7 +111,7 @@ def client_handler(client_socket):
         session_transport.close()
     else:
         print("[*] Success - SSH channel active")
-        print(f"[*] Waiting conenction on {get_lan_ip_address()}, {server.to_port}")
+        print(f"[*] Waiting conenction on port: {server.to_port}")
         while session_chan.active:
             try:
                 try:
@@ -155,6 +156,7 @@ def main():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         ssh_port = get_random_port()
+        server_address = os.environ['SERVER_ADDRESS']
 
         server_socket.bind((SERVER_ADDRESS, ssh_port))
         server_socket.listen(20)

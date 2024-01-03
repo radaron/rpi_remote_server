@@ -13,7 +13,7 @@ def login():
     db_session = get_session()
 
     if record := db_session.get(Authentication, username):
-        if validate_password(password.encode(), record):
+        if validate_password(password, record):
             session['username'] = username
 
             db_session.close()
