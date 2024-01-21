@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Container, Button, Navbar, Row, Col } from 'react-bootstrap'
 import styles from './Manage.module.scss'
-import { ReactComponent as ReactLogo } from '../xicon.svg'
+import { ReactComponent as XIcon } from '../xicon.svg'
 import { ReactComponent as RpiIcon } from '../rpi.svg'
+import useWindowSize from './useWindowSize'
 
 const fetchData = async (onDataChanged) => {
   try {
@@ -20,6 +21,8 @@ const fetchData = async (onDataChanged) => {
 }
 
 const ItemList = ({ data, onDataChanged }) => {
+  const windowSize = useWindowSize();
+  const isDetailedView = windowSize.width >= 770;
   const deleteItem = (name) => async () => {
     try {
       await fetch('/rpi/api/data', {
@@ -35,8 +38,9 @@ const ItemList = ({ data, onDataChanged }) => {
       }
   }
   const getItem = (
-      name, 
-      polledTime, 
+      index,
+      name,
+      polledTime,
       currentTime,
       uptime,
       cpuUsage,
@@ -53,22 +57,24 @@ const ItemList = ({ data, onDataChanged }) => {
     }
 
     return (
-      <Row className={styles.element} key={name}>
-        <Col md={2}>{name}</Col>
-        <Col md={2}>{uptime}</Col>
-        <Col md={1}>{cpuUsage}</Col>
-        <Col md={2}>{memoryUsage}</Col>
-        <Col md={1}>{diskUsage}</Col>
-        <Col md={2}>{temperature}</Col>
-        <Col md={1}>
+      <Row key={index} className={styles.element} >
+        <Col className={styles.name_column}>{name}</Col>
+        {isDetailedView && <>
+          <Col>{uptime}</Col>
+          <Col>{cpuUsage}</Col>
+          <Col>{memoryUsage}</Col>
+          <Col>{diskUsage}</Col>
+          <Col>{temperature}</Col>
+        </>}
+        <Col>
           <div className={styles[`status--${getStatusCss(currentTime, polledTime)}`]} />
         </Col>
-        <Col className={styles.xbutton} md={1}>
+        <Col className={styles.xbutton}>
           <Button
             variant='outline-danger'
             onClick={deleteItem(name)}
           >
-            <ReactLogo />
+            <XIcon />
           </Button>
         </Col>
       </Row>
@@ -76,26 +82,29 @@ const ItemList = ({ data, onDataChanged }) => {
   }
   return (
     <div>
-      <Row className={styles.header}>
-        <Col md={2}>Name</Col>
-        <Col md={2}>{'Uptime (hour)'}</Col>
-        <Col md={1}>{'CPU (%)'}</Col>
-        <Col md={2}>{'Memory (%)'}</Col>
-        <Col md={1}>{'Disk (%)'}</Col>
-        <Col md={2}>{'Temperature (°C)'}</Col>
-        <Col md={1}>Status</Col>
-        <Col md={1}/>
+      <Row className={styles.header} >
+        <Col className={styles.name_column}>Name</Col>
+        {isDetailedView && <>
+          <Col>{'Uptime (hour)'}</Col>
+          <Col>{'CPU (%)'}</Col>
+          <Col>{'Memory (%)'}</Col>
+          <Col>{'Disk (%)'}</Col>
+          <Col>{'Temperature (°C)'}</Col>
+        </>}
+        <Col>Status</Col>
+        <Col/>
       </Row>
       {data.data && data.data
-        .map(val => getItem(
-          val.name, 
-          val.polled_time, 
-          data.current_time, 
-          val.uptime, 
-          val.cpu_usage, 
-          val.memory_usage, 
-          val.disk_usage, 
-          val.temperature
+        .map((val, index) => getItem(
+          index,
+          val.name,
+          val.polled_time,
+          data.current_time,
+          val.uptime,
+          val.cpu_usage,
+          val.memory_usage,
+          val.disk_usage,
+          val.temperature,
         ))}
     </div>
   )
@@ -105,7 +114,7 @@ const Manage = () => {
   const [data, setData] = useState({})
 
   const logOut = async () => {
-    const response = await fetch('/rpi/logout', { 
+    const response = await fetch('/rpi/logout', {
       method: 'POST',
     })
     if (response.redirected) {

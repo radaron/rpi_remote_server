@@ -14,7 +14,7 @@
     overflow-y: auto;
     position: sticky;
     top: 0px;
-    
+
     .header {
         font-weight: bold;
         padding: 10px;
@@ -27,6 +27,11 @@
         padding: 10px;
     }
 
+    .name_column {
+        -ms-flex: 0 0 170px;
+        flex: 0 0 170px;
+    }
+
     .status {
         width: 40px;
         height: 100%;
@@ -37,7 +42,7 @@
             @extend .status;
             background-color: #00ff00;
         }
-        
+
         &--statusRed {
             @extend .status;
             background-color: #ff0000;
@@ -48,4 +53,3 @@
         text-align: right;
     }
 }
-
