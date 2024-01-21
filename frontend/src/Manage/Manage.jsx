@@ -46,7 +46,7 @@ const ItemList = ({ data, onDataChanged }) => {
       cpuUsage,
       memoryUsage,
       diskUsage,
-      temperature
+      temperature,
     ) => {
     const getStatusCss = (currentTime, polledTime) => {
       const statusMap = {
