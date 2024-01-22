@@ -87,9 +87,9 @@ const ItemList = ({ data, onDataChanged }) => {
         {isDetailedView && <>
           <Col>{'Uptime (hour)'}</Col>
           <Col>{'CPU (%)'}</Col>
-          <Col>{'Memory (%)'}</Col>
+          <Col>{'Mem (%)'}</Col>
           <Col>{'Disk (%)'}</Col>
-          <Col>{'Temperature (°C)'}</Col>
+          <Col>{'Temp (°C)'}</Col>
         </>}
         <Col>Status</Col>
         <Col/>
