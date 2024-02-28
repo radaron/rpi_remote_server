@@ -330,9 +330,6 @@ typing-extensions==4.8.0 \
     #   astroid
     #   pylint
     #   sqlalchemy
-upnpy==1.1.8 \
-    --hash=sha256:f43acab6271c25d8073d0e8549cd62a349abdd0a8cb9c21d036bea6132eb632e
-    # via rpi_remote_server (pyproject.toml)
 urllib3==1.26.18 \
     --hash=sha256:34b97092d7e0a3a8cf7cd10e386f401b3737364026c45e622aa02903dffe0f07 \
     --hash=sha256:f8ecc1bba5667413457c529ab955bf8c67b45db799d159066261719e328580a0
