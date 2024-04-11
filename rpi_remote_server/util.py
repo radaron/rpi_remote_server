@@ -1,4 +1,8 @@
+import random
+import socket
 import time
+from rpi_remote_server.config import config
+
 
 def get_time():
     return time.time()
@@ -8,5 +12,12 @@ def get_secret_key():
     return open("secret", 'r', encoding="utf-8").read()
 
 
-def validate_fields_exists(request_form, values):
-    return all(request_form.get(value, None) for value in values)
+# pylint: disable=no-member
+def get_random_open_port(port_start=int(config.port_range_start),
+                         port_end=int(config.port_range_end),
+                         local_address=config.local_address):
+    while True:
+        port = random.randint(port_start, port_end)
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            if s.connect_ex((local_address, port)) != 0:
+                return port

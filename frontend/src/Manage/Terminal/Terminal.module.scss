@@ -1,0 +1,32 @@
+.footer {
+  background-color: black;
+  color: white;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  border-style: solid;
+  border-color: grey;
+  font: 1.3rem Inconsolata, monospace;
+  display: flex;
+
+  .text {
+    width: 95%;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 0.5rem;
+
+    .line {
+      min-height: 20px;
+    }
+  }
+
+  .close {
+    width: 5%;
+    display: flex;
+    justify-content: right;
+    align-items: flex-start;
+    height: 100%;
+  }
+
+}

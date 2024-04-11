@@ -3,6 +3,7 @@ import getpass
 from rpi_remote_server.database import init_db, get_session, Authentication
 from rpi_remote_server.authentication import generate_salt, hash_password
 
+
 def main():
     init_db()
 
@@ -21,16 +22,15 @@ def main():
         record.password = password
         record.salt = salt
     else:
-        record = Authentication(
-            username = username,
-            password = password,
-            salt = salt
-        )
+        record = Authentication(username=username,
+                                password=password,
+                                salt=salt)
         db_session.add(record)
 
     db_session.commit()
 
     db_session.close()
+
 
 if __name__ == "__main__":
     main()

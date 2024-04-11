@@ -32,7 +32,7 @@ add-user:
 	@$(ACTIVATE) && python -m tools.add_user
 
 forward:
-	@$(ACTIVATE) && python -m tools.forward --name $(NAME) --port $(PORT) 
+	@$(ACTIVATE) && python -m tools.forward --name $(NAME) --port $(PORT)
 
 generate-secret:
 	@$(ACTIVATE) && python -m tools.generate_secret
@@ -47,4 +47,4 @@ build-frontend:
 	sed -i'.bak' -e 's/\/favicon.ico/\/rpi\/favicon.ico/g' rpi_remote_server/templates/index.html
 
 start-dev:
-	@$(ACTIVATE) && python -m rpi_remote_server.app
+	@$(ACTIVATE) && EVENTLET_HUB=poll python -m rpi_remote_server.app

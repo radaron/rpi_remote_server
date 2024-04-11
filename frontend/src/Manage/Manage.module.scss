@@ -10,7 +10,7 @@
     color: white;
     box-shadow: 3px 3px 5px #010000;
     text-align: center;
-    height: 95%;
+    height: 90%;
     overflow-y: auto;
     position: sticky;
     top: 0px;
@@ -19,6 +19,7 @@
         font-weight: bold;
         padding: 10px;
         position: sticky;
+        z-index: 1;
         top: 0px;
         background-color: #2b3035;
     }

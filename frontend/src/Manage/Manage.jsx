@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { Container, Button, Navbar, Row, Col } from 'react-bootstrap'
 import styles from './Manage.module.scss'
 import { ReactComponent as XIcon } from '../xicon.svg'
+import { ReactComponent as ConnectIcon } from '../connect.svg'
 import { ReactComponent as RpiIcon } from '../rpi.svg'
 import useWindowSize from './useWindowSize'
+import { Terminal } from './Terminal'
 
 const fetchData = async (onDataChanged) => {
   try {
@@ -20,7 +22,7 @@ const fetchData = async (onDataChanged) => {
   }
 }
 
-const ItemList = ({ data, onDataChanged }) => {
+const ItemList = ({ data, onDataChanged, connectTarget, setConnectTarget }) => {
   const windowSize = useWindowSize();
   const isDetailedView = windowSize.width >= 770;
   const deleteItem = (name) => async () => {
@@ -36,6 +38,9 @@ const ItemList = ({ data, onDataChanged }) => {
     } catch (error) {
       console.log(error)
       }
+  }
+  const startForward = (name) => () => {
+    setConnectTarget(name)
   }
   const getItem = (
       index,
@@ -67,16 +72,28 @@ const ItemList = ({ data, onDataChanged }) => {
           <Col>{temperature}</Col>
         </>}
         <Col>
-          <div className={styles[`status--${getStatusCss(currentTime, polledTime)}`]} />
-        </Col>
-        <Col className={styles.xbutton}>
           <Button
-            variant='outline-danger'
-            onClick={deleteItem(name)}
-          >
-            <XIcon />
+              variant='outline-success'
+              disabled={!!connectTarget}
+              onClick={startForward(name)}
+            >
+            <ConnectIcon/>
           </Button>
         </Col>
+        {isDetailedView && <>
+          <Col>
+            <div className={styles[`status--${getStatusCss(currentTime, polledTime)}`]} />
+          </Col>
+          <Col className={styles.xbutton}>
+            <Button
+              variant='outline-danger'
+              disabled={!!connectTarget}
+              onClick={deleteItem(name)}
+            >
+              <XIcon />
+            </Button>
+          </Col>
+        </>}
       </Row>
     )
   }
@@ -91,8 +108,12 @@ const ItemList = ({ data, onDataChanged }) => {
           <Col>{'Disk (%)'}</Col>
           <Col>{'Temp (°C)'}</Col>
         </>}
-        <Col>Status</Col>
         <Col/>
+        {isDetailedView && <>
+          <Col>Status</Col>
+          <Col/>
+        </>
+         }
       </Row>
       {data.data && data.data
         .map((val, index) => getItem(
@@ -111,6 +132,7 @@ const ItemList = ({ data, onDataChanged }) => {
 }
 
 const Manage = () => {
+  const [connectTarget, setConnectTarget] = useState('')
   const [data, setData] = useState({})
 
   const logOut = async () => {
@@ -132,7 +154,6 @@ const Manage = () => {
     }, 5000)
     return () => clearInterval(interval)
   }, [])
-
   return (
     <>
       <Navbar expand='lg' bg='dark' data-bs-theme='dark' className='bg-body-tertiary'>
@@ -146,9 +167,12 @@ const Manage = () => {
           <ItemList
             data={data}
             onDataChanged={onDataChanged}
+            connectTarget={connectTarget}
+            setConnectTarget={setConnectTarget}
           />
         </Container>
       </Container>
+      {connectTarget && <Terminal connectTarget={connectTarget} setConnectTarget={setConnectTarget}/>}
     </>
   )
 }
