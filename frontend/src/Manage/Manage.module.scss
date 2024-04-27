@@ -15,42 +15,5 @@
     position: sticky;
     top: 0px;
 
-    .header {
-        font-weight: bold;
-        padding: 10px;
-        position: sticky;
-        z-index: 1;
-        top: 0px;
-        background-color: #2b3035;
-    }
 
-    .element {
-        padding: 10px;
-    }
-
-    .name_column {
-        -ms-flex: 0 0 170px;
-        flex: 0 0 170px;
-    }
-
-    .status {
-        width: 40px;
-        height: 100%;
-        border-radius: 20px;
-        margin: auto;
-
-        &--statusGreen {
-            @extend .status;
-            background-color: #00ff00;
-        }
-
-        &--statusRed {
-            @extend .status;
-            background-color: #ff0000;
-        }
-    }
-
-    .xbutton {
-        text-align: right;
-    }
 }

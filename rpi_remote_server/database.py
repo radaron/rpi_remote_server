@@ -2,10 +2,10 @@
 
 from os import path
 from sqlalchemy import String, Integer, Column
-from sqlalchemy import create_engine, ForeignKey 
+from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy.orm import (
-  sessionmaker, relationship, Mapped, 
-  mapped_column, declarative_base
+    sessionmaker, relationship, Mapped,
+    mapped_column, declarative_base
 )
 
 
@@ -24,17 +24,16 @@ class RpiOrder(Base):
     to_port = Column(Integer)
     polled_time = Column(Integer)
     passwd = Column(String(50))
-    metric: Mapped["RpiMetric"] = relationship(back_populates="rpi_order", 
+    metric: Mapped["RpiMetric"] = relationship(back_populates="rpi_order",
                                                cascade="all, delete-orphan")
-
 
 
 class RpiMetric(Base):
     __tablename__ = 'rpi_metric'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(ForeignKey("rpi_order.name", 
-                                                 ondelete='CASCADE', 
+    name: Mapped[str] = mapped_column(ForeignKey("rpi_order.name",
+                                                 ondelete='CASCADE',
                                                  onupdate='CASCADE'))
     rpi_order: Mapped["RpiOrder"] = relationship(back_populates="metric")
     uptime = Column(Integer)
@@ -51,7 +50,9 @@ class Authentication(Base):
     password = Column(String(50))
     salt = Column(String(50))
 
+
 table_objects = [RpiOrder.__table__, Authentication.__table__, RpiMetric.__table__]
+
 
 def init_db():
     global ENGINE
@@ -63,14 +64,3 @@ def init_db():
 def get_session():
     ses = sessionmaker(bind=ENGINE)
     return ses()
-
-if __name__ == "__main__":
-    init_db()
-    ses = get_session()
-    order = RpiOrder(name="test")
-    order.metric = RpiMetric()
-    ses.add(order)
-    ses.commit()
-    o = ses.get(RpiOrder, 'test')
-    # ses.delete(o)
-    ses.commit()

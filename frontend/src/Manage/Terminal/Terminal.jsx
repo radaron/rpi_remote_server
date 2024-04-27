@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { io } from 'socket.io-client'
-import styles from './Terminal.module.scss'
 import CloseButton from 'react-bootstrap/CloseButton';
+import { DataContext } from '../Manage'
+import styles from './Terminal.module.scss'
 
-export const Terminal = ({ connectTarget, setConnectTarget }) => {
+export const Terminal = () => {
+  const { connectTarget, setConnectTarget, deleteItem } = useContext(DataContext)
   const [consoleLines, setConsoleLines] = useState(['', '', '', '', '', ''])
   useEffect(() => {
     const addLine = (line) => {
@@ -27,6 +29,11 @@ export const Terminal = ({ connectTarget, setConnectTarget }) => {
       }
     }
   }, [connectTarget, setConnectTarget])
+  const closeTerminal = () => {
+    deleteItem(connectTarget)
+    setConnectTarget('')
+  }
+
   const ConsoleTextComponent = consoleLines.map((text, index) => <p className={styles.line} key={index}>{text}</p>)
   return (
     <div className={styles.footer}>
@@ -35,7 +42,7 @@ export const Terminal = ({ connectTarget, setConnectTarget }) => {
       </div>
       <div className={styles.close}>
         <CloseButton
-          onClick={() => {setConnectTarget('')}}
+          onClick={() => {closeTerminal()}}
           variant='white'
         />
       </div>

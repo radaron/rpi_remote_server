@@ -1,0 +1,28 @@
+.element {
+  padding: 10px;
+}
+
+.name_column {
+  flex: 0 0 160px;
+}
+
+.status {
+  width: 40px;
+  height: 100%;
+  border-radius: 20px;
+  margin: auto;
+
+  &--statusGreen {
+      @extend .status;
+      background-color: #00ff00;
+  }
+
+  &--statusRed {
+      @extend .status;
+      background-color: #ff0000;
+  }
+}
+
+.xbutton {
+  text-align: right;
+}

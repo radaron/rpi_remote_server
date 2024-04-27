@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Container, Form, Button, FloatingLabel } from 'react-bootstrap'
 import styles from './Login.module.scss'
 
-function Login () {
+export const Login = () => {
   const [errorText, setErrorText] = useState(null)
   const [loginForm, setloginForm] = useState({
     username: '',
@@ -34,7 +34,6 @@ function Login () {
       username: '',
       password: ''
     }))
-
   }
 
   const handleChange = (event) => {
@@ -81,5 +80,3 @@ function Login () {
     </Container>
   )
 }
-
-export default Login

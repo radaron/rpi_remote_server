@@ -1,6 +1,7 @@
 import bcrypt
 from rpi_remote_server.database import get_session, Authentication
 
+
 def generate_salt():
     return bcrypt.gensalt()
 
