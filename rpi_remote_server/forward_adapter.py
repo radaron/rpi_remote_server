@@ -1,7 +1,6 @@
 from flask_socketio import emit
 from rpi_remote_server.database import get_session, RpiOrder
 from rpi_remote_server.forwarder import Forwarder
-from rpi_remote_server.config import config
 
 
 class ForwardAdapter:
@@ -11,7 +10,7 @@ class ForwardAdapter:
         self._logger = logger
 
     def start(self):
-        forwarder = Forwarder(self._client_name, config.host_name)  # pylint: disable=no-member
+        forwarder = Forwarder(self._client_name)
         for data in forwarder.forward():
             if data == 0:
                 break

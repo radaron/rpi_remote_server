@@ -1,4 +1,5 @@
 import os
+import json
 import configparser
 
 
@@ -8,10 +9,12 @@ class Config:
     CONFIG_PATH = os.path.join(CONFIG_FOLDER_PATH, "config.ini")
     DEFAULT_CONFIG = {
         "connection": {
-            "local_address": "0.0.0.0",
             "port_range_start": "10000",
             "port_range_end": "20000",
-            "host_name": "example.com",
+            "custom_messages": json.dumps([
+                "Connect: ssh root@example.com -p {port}",
+                "Dynamic port forward: ssh -D 9999 root@example.com -p {port} -t top"
+            ]),
         }
     }
 

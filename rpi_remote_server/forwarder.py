@@ -1,15 +1,18 @@
 import select
 import socket
+import json
 from datetime import datetime
 from rpi_remote_server.util import get_random_open_port
 from rpi_remote_server.config import config
 
 
+LOCAL_ADDRESS = '0.0.0.0'
+
+
 class Forwarder:
-    def __init__(self, name, host_name, connection_timeout=120):
+    def __init__(self, name, connection_timeout=120):
         self._connection_timeout = connection_timeout
         self._name = name
-        self._host_name = host_name
 
     @staticmethod
     def log(msg):
@@ -18,10 +21,14 @@ class Forwarder:
 
     def _create_socket(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.bind((config.local_address, get_random_open_port()))  # pylint: disable=no-member
+        sock.bind((LOCAL_ADDRESS, get_random_open_port()))  # pylint: disable=no-member
         sock.settimeout(self._connection_timeout)
         sock.listen(1)
         return sock
+
+    def _log_custom_messages(self, port):
+        for message in json.loads(config.custom_messages):  # pylint: disable=no-member
+            yield self.log(message.format(port=port))
 
     def forward(self):
         try:
@@ -32,8 +39,7 @@ class Forwarder:
             source_conn, source_addr = source_socket.accept()
             yield self.log(f"{self._name} connected from: {source_addr}")
             yield self.log(f'waiting for connection from user port: {target_socket.getsockname()[1]}')
-            yield self.log(f'Connect: ssh osmc@{self._host_name} -p {target_socket.getsockname()[1]}')
-            yield self.log(f'Dynamic port forward: ssh -D 9999 osmc@{self._host_name} -p {target_socket.getsockname()[1]} -t top')
+            yield from self._log_custom_messages(target_socket.getsockname()[1])
             target_conn, target_addr = target_socket.accept()
             yield self.log(f"user connected from: {target_addr}")
             while True:
