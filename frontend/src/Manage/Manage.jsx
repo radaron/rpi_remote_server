@@ -52,6 +52,7 @@ export const Manage = () => {
   }
 
   const isDetailedView = windowSize.width >= 770;
+  const isPhoneLandscapeView = windowSize.height <= 400;
   const logOut = async () => {
     const response = await fetch('/rpi/logout', {
       method: 'POST',
@@ -62,7 +63,9 @@ export const Manage = () => {
    }
   }
   return (
-    <DataContext.Provider value={{connectTarget, setConnectTarget, isDetailedView, deleteItem}}>
+    <DataContext.Provider value={
+        {connectTarget, setConnectTarget, isDetailedView, deleteItem, isPhoneLandscapeView}
+    }>
       <Navbar expand='lg' bg='dark' data-bs-theme='dark' className='bg-body-tertiary'>
         <Container fluid>
           <Navbar.Brand><RpiIcon />Rpi remote server</Navbar.Brand>

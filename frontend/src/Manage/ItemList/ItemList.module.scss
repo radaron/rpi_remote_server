@@ -1,16 +1,16 @@
-.header {
-  font-weight: bold;
-  padding: 10px;
-  position: sticky;
-  z-index: 1;
-  top: 0px;
-  background-color: #2b3035;
-}
+.table {
+  width: 100%;
 
-.element {
-  padding: 10px;
-}
+  .header {
+    font-weight: bold;
+    position: sticky;
+    z-index: 1;
+    top: 0px;
+    background-color: #2b3035;
+  }
 
-.name_column {
-  flex: 0 0 160px;
+  th, td {
+    padding: 10px;
+  }
+
 }
