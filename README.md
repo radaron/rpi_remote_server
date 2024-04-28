@@ -16,6 +16,20 @@ Then you can connect eg.: ssh in your local terminal
 ## Installation
 
 ### Preconfiguration
+1. config.ini - generated automatically after first run
+``` ini
+[connection]
+port_range_start = 10000
+port_range_end = 20000
+custom_messages = [
+  # custom message displays after remote client connected
+  # the {port} replaced with the listening port
+  "This is a custom message",
+  "This is a custom message displaying the {port} where user can connect",
+  "Connect: ssh root@example.com -p {port}",
+  "Dynamic port forward: ssh -D 9999 root@example.com -p {port} -t top"
+  ]
+```
 1. Enable port range in firewall where the connection can happen default is 10000-20000
 2. Configure nginx
 ``` nginx
