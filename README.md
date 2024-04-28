@@ -15,53 +15,6 @@ Then you can connect eg.: ssh in your local terminal
 
 ## Installation
 
-### Preconfiguration
-1. config.ini - generated automatically after first run
-``` ini
-[connection]
-port_range_start = 10000
-port_range_end = 20000
-custom_messages = [
-  # custom message displays after remote client connected
-  # the {port} replaced with the listening port
-  "This is a custom message",
-  "This is a custom message displaying the {port} where user can connect",
-  "Connect: ssh root@example.com -p {port}",
-  "Dynamic port forward: ssh -D 9999 root@example.com -p {port} -t top"
-  ]
-```
-1. Enable port range in firewall where the connection can happen default is 10000-20000
-2. Configure nginx
-``` nginx
-upstream rpi_remote_server {
-      server 127.0.0.1:8888;
-}
-
-server {
-  server_name example.com;
-
-  location /rpi/ {
-    proxy_pass http://rpi_remote_server/rpi/;
-  }
-
-  location / {
-    return 301 http://$server_name/rpi/manage;
-  }
-
-  location /rpi/socket.io {
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header Host $host;
-
-    proxy_pass http://rpi_remote_server/rpi/socket.io;
-
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-  }
-}
-```
-
-
 ### Prerequisites
 * rust
 * libffi
@@ -107,6 +60,58 @@ WantedBy=multi-user.target" | sudo tee /etc/systemd/system/rpi-remote-server.ser
 sudo systemctl daemon-reload
 sudo systemctl enable rpi-remote-server.service
 sudo systemctl start rpi-remote-server.service
+```
+
+### Configuration
+
+#### config.ini
+generated automatically after first run
+``` ini
+[connection]
+# the application randomly select port for receive connection from remote and for user within this range
+port_range_start = 10000
+port_range_end = 20000
+custom_messages = [
+  # custom message displays after remote client connected and the {port} replaced with the listening port
+  "This is a custom message",
+  "This is a custom message displaying the {port} where user can connect",
+  "Connect: ssh root@example.com -p {port}",
+  "Dynamic port forward: ssh -D 9999 root@example.com -p {port} -t top"
+  ]
+```
+
+#### Firewall
+Enable the port range in firewall where the connection can happen default is 10000-20000
+
+#### Configure webserver (if needed)
+Nginx example
+``` nginx
+upstream rpi_remote_server {
+      server 127.0.0.1:8888;
+}
+
+server {
+  server_name example.com;
+
+  location /rpi/ {
+    proxy_pass http://rpi_remote_server/rpi/;
+  }
+
+  location / {
+    return 301 http://$server_name/rpi/manage;
+  }
+
+  location /rpi/socket.io {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $host;
+
+    proxy_pass http://rpi_remote_server/rpi/socket.io;
+
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+  }
+}
 ```
 
 ## Check logs
