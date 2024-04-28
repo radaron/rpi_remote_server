@@ -27,11 +27,13 @@ make install
 ```
 
 ### Generate secret
+Needs for session cookies
 ```
 make generate-secret
 ```
 
-### Generate user
+### Create user
+Needs to login the manage page
 ```
 make add-user
 ```
