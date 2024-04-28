@@ -60,7 +60,7 @@ def get_order():
 def manage_data():
     if verify_username(session.get('username')):
         db_session = get_session()
-        resp = {"data" : []}
+        resp = {"data": []}
         orders = db_session.query(RpiOrder).order_by(RpiOrder.name).all()
 
         for order in orders:

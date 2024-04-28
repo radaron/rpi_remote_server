@@ -1,29 +1,42 @@
-import React, { useState, useEffect } from 'react'
-import { Container, Button, Navbar, Row, Col } from 'react-bootstrap'
-import styles from './Manage.module.scss'
-import { ReactComponent as XIcon } from '../xicon.svg'
+import React, { useState, useEffect, createContext } from 'react'
+import { Container, Button, Navbar } from 'react-bootstrap'
 import { ReactComponent as RpiIcon } from '../rpi.svg'
+import Terminal from './Terminal'
+import ItemList from './ItemList'
 import useWindowSize from './useWindowSize'
+import styles from './Manage.module.scss'
 
-const fetchData = async (onDataChanged) => {
-  try {
-    const reponse = await fetch('/rpi/api/data', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-    const data = await reponse.json()
-    onDataChanged(data)
-  } catch(err) {
-    console.log(err)
+export const DataContext = createContext()
+
+export const Manage = () => {
+  const [connectTarget, setConnectTarget] = useState('')
+  const [data, setData] = useState({})
+  const windowSize = useWindowSize()
+
+  useEffect(() => {
+    fetchData()
+    const interval = setInterval(() => {
+      fetchData()
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      const reponse = await fetch('/rpi/api/data', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      const data = await reponse.json()
+      setData(data)
+    } catch(err) {
+      console.log(err)
+    }
   }
-}
 
-const ItemList = ({ data, onDataChanged }) => {
-  const windowSize = useWindowSize();
-  const isDetailedView = windowSize.width >= 770;
-  const deleteItem = (name) => async () => {
+  const deleteItem = async (name) => {
     try {
       await fetch('/rpi/api/data', {
         method: 'DELETE',
@@ -32,87 +45,13 @@ const ItemList = ({ data, onDataChanged }) => {
         },
         body: JSON.stringify({ name })
       })
-      fetchData(onDataChanged)
+      fetchData()
     } catch (error) {
       console.log(error)
-      }
-  }
-  const getItem = (
-      index,
-      name,
-      polledTime,
-      currentTime,
-      uptime,
-      cpuUsage,
-      memoryUsage,
-      diskUsage,
-      temperature,
-    ) => {
-    const getStatusCss = (currentTime, polledTime) => {
-      const statusMap = {
-        true: 'statusGreen',
-        false: 'statusRed'
-      }
-      return statusMap[currentTime - polledTime < 60]
     }
-
-    return (
-      <Row key={index} className={styles.element} >
-        <Col className={styles.name_column}>{name}</Col>
-        {isDetailedView && <>
-          <Col>{uptime}</Col>
-          <Col>{cpuUsage}</Col>
-          <Col>{memoryUsage}</Col>
-          <Col>{diskUsage}</Col>
-          <Col>{temperature}</Col>
-        </>}
-        <Col>
-          <div className={styles[`status--${getStatusCss(currentTime, polledTime)}`]} />
-        </Col>
-        <Col className={styles.xbutton}>
-          <Button
-            variant='outline-danger'
-            onClick={deleteItem(name)}
-          >
-            <XIcon />
-          </Button>
-        </Col>
-      </Row>
-    )
   }
-  return (
-    <div>
-      <Row className={styles.header} >
-        <Col className={styles.name_column}>Name</Col>
-        {isDetailedView && <>
-          <Col>{'Uptime (hour)'}</Col>
-          <Col>{'CPU (%)'}</Col>
-          <Col>{'Mem (%)'}</Col>
-          <Col>{'Disk (%)'}</Col>
-          <Col>{'Temp (°C)'}</Col>
-        </>}
-        <Col>Status</Col>
-        <Col/>
-      </Row>
-      {data.data && data.data
-        .map((val, index) => getItem(
-          index,
-          val.name,
-          val.polled_time,
-          data.current_time,
-          val.uptime,
-          val.cpu_usage,
-          val.memory_usage,
-          val.disk_usage,
-          val.temperature,
-        ))}
-    </div>
-  )
-}
 
-const Manage = () => {
-  const [data, setData] = useState({})
-
+  const isDetailedView = windowSize.width >= 770;
   const logOut = async () => {
     const response = await fetch('/rpi/logout', {
       method: 'POST',
@@ -122,19 +61,8 @@ const Manage = () => {
       return;
    }
   }
-  const onDataChanged = (data) => {
-    setData(data)
-  }
-  useEffect(() => {
-    fetchData(onDataChanged)
-    const interval = setInterval(() => {
-      fetchData(onDataChanged)
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [])
-
   return (
-    <>
+    <DataContext.Provider value={{connectTarget, setConnectTarget, isDetailedView, deleteItem}}>
       <Navbar expand='lg' bg='dark' data-bs-theme='dark' className='bg-body-tertiary'>
         <Container fluid>
           <Navbar.Brand><RpiIcon />Rpi remote server</Navbar.Brand>
@@ -143,14 +71,10 @@ const Manage = () => {
       </Navbar>
       <Container className={styles.mainContainer}>
         <Container className={styles.dataContainer}>
-          <ItemList
-            data={data}
-            onDataChanged={onDataChanged}
-          />
+          <ItemList data={data} />
         </Container>
       </Container>
-    </>
+      {connectTarget && <Terminal/>}
+    </DataContext.Provider>
   )
 }
-
-export default Manage
