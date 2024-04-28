@@ -33,7 +33,7 @@ class Forwarder:
             yield self.log(f"{self._name} connected from: {source_addr}")
             yield self.log(f'waiting for connection from user port: {target_socket.getsockname()[1]}')
             yield self.log(f'Connect: ssh osmc@{self._host_name} -p {target_socket.getsockname()[1]}')
-            yield self.log(f'Dynamic port forward: ssh -D 9999 osmc@{self._host_name} -p {target_socket.getsockname()[1]} top')
+            yield self.log(f'Dynamic port forward: ssh -D 9999 osmc@{self._host_name} -p {target_socket.getsockname()[1]} -t top')
             target_conn, target_addr = target_socket.accept()
             yield self.log(f"user connected from: {target_addr}")
             while True:
