@@ -2,11 +2,8 @@ import select
 import socket
 import json
 from datetime import datetime
-from rpi_remote_server.util import get_random_open_port
+from rpi_remote_server.util import get_random_open_port, LOCAL_ADDRESS
 from rpi_remote_server.config import config
-
-
-LOCAL_ADDRESS = '0.0.0.0'
 
 
 class Forwarder:
