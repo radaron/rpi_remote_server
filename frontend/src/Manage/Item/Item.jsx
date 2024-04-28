@@ -14,7 +14,6 @@ export const Item = ({
   memoryUsage,
   diskUsage,
   temperature,
-
 }) => {
   const { connectTarget, setConnectTarget, isDetailedView, deleteItem } = useContext(DataContext)
   const startForward = (name) => () => {
