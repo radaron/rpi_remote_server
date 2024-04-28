@@ -1,6 +1,6 @@
 import { ReactComponent as XIcon } from './xicon.svg'
 import { ReactComponent as ConnectIcon } from './connect.svg'
-import { Button, Row, Col } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 import { useContext } from 'react'
 import { DataContext } from '../Manage'
 import styles from './Item.module.scss'
@@ -26,19 +26,22 @@ export const Item = ({
       true: 'statusGreen',
       false: 'statusRed'
     }
+    if (name === connectTarget) {
+      return 'statusBlue'
+    }
     return statusMap[currentTime - polledTime < 60]
   }
   return (
-    <Row className={styles.element} >
-      <Col className={styles.name_column}>{name}</Col>
+    <tr className={styles.element}>
+      <td className={styles.name_column}>{name}</td>
       {isDetailedView && <>
-        <Col>{uptime}</Col>
-        <Col>{cpuUsage}</Col>
-        <Col>{memoryUsage}</Col>
-        <Col>{diskUsage}</Col>
-        <Col>{temperature}</Col>
+        <td>{uptime}</td>
+        <td>{cpuUsage}</td>
+        <td>{memoryUsage}</td>
+        <td>{diskUsage}</td>
+        <td>{temperature}</td>
       </>}
-      <Col>
+      <td>
         <Button
             variant='outline-success'
             disabled={!!connectTarget}
@@ -46,12 +49,12 @@ export const Item = ({
           >
           <ConnectIcon/>
         </Button>
-      </Col>
-      {isDetailedView && <>
-        <Col>
+      </td>
+        <td>
           <div className={styles[`status--${getStatusCss(currentTime, polledTime)}`]} />
-        </Col>
-        <Col className={styles.xbutton}>
+        </td>
+      {isDetailedView && <>
+        <td>
           <Button
             variant='outline-danger'
             disabled={!!connectTarget}
@@ -59,8 +62,8 @@ export const Item = ({
           >
             <XIcon />
           </Button>
-        </Col>
+        </td>
       </>}
-    </Row>
+    </tr>
   )
 }
