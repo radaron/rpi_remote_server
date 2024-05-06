@@ -15,12 +15,6 @@ Then you can connect eg.: ssh in your local terminal
 
 ## Installation
 
-### Prerequisites
-* rust
-* libffi
-* gcc
-* openssl
-
 ### Install dependencies
 ```
 make install

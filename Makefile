@@ -31,9 +31,6 @@ lock: pip
 add-user:
 	@$(ACTIVATE) && python -m tools.add_user
 
-forward:
-	@$(ACTIVATE) && python -m tools.forward --name $(NAME) --port $(PORT)
-
 generate-secret:
 	@$(ACTIVATE) && python -m tools.generate_secret
 
