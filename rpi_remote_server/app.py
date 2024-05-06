@@ -9,7 +9,7 @@ from rpi_remote_server.util import get_secret_key
 from rpi_remote_server.routes.api import api
 from rpi_remote_server.routes.authentication import authentication
 from rpi_remote_server.routes.pages import pages
-from rpi_remote_server.forward_adapter import ForwardAdapter
+from rpi_remote_server.forwarder import Forwarder
 
 
 app = Flask(__name__, static_url_path="/rpi/static")
@@ -35,7 +35,7 @@ def make_session_permanent():
 
 @socketio.on("start_forward")
 def forward(event_body):
-    adapter = ForwardAdapter(event_body['name'], app.logger)
+    adapter = Forwarder(event_body['name'], app.logger)
     adapter.start()
 
 

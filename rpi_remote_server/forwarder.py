@@ -2,19 +2,23 @@ import select
 import socket
 import json
 from datetime import datetime
+from flask_socketio import emit
+from rpi_remote_server.database import get_session, RpiOrder
 from rpi_remote_server.util import get_random_open_port, LOCAL_ADDRESS
 from rpi_remote_server.config import config
 
 
 class Forwarder:
-    def __init__(self, name, connection_timeout=120):
+
+    def __init__(self, client_name, logger, connection_timeout=120):
+        self._client_name = client_name
+        self._logger = logger
         self._connection_timeout = connection_timeout
-        self._name = name
 
     @staticmethod
-    def log(msg):
+    def _log(msg):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        return f"{timestamp} - {msg}"
+        emit('forward_resp', {"data": f"{timestamp} - {msg}"})
 
     def _create_socket(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -25,40 +29,60 @@ class Forwarder:
 
     def _log_custom_messages(self, port):
         for message in json.loads(config.custom_messages):  # pylint: disable=no-member
-            yield self.log(message.format(port=port))
+            self._log(message.format(port=port))
 
-    def forward(self):
+    def start(self):
         try:
             source_socket = self._create_socket()
             target_socket = self._create_socket()
-            yield {"from": source_socket.getsockname()[1], "to": target_socket.getsockname()[1]}
-            yield self.log(f'waiting for connection from {self._name} port: {source_socket.getsockname()[1]}')
+            self._handle_connection(source_socket.getsockname()[1])
+            self._log(f'waiting for connection from {self._client_name} port: {source_socket.getsockname()[1]}')
             source_conn, source_addr = source_socket.accept()
-            yield self.log(f"{self._name} connected from: {source_addr}")
-            yield self.log(f'waiting for connection from user port: {target_socket.getsockname()[1]}')
-            yield from self._log_custom_messages(target_socket.getsockname()[1])
+            self._log(f"{self._client_name} connected from: {source_addr}")
+            self._log(f'waiting for connection from user port: {target_socket.getsockname()[1]}')
+            self._log_custom_messages(target_socket.getsockname()[1])
             target_conn, target_addr = target_socket.accept()
-            yield self.log(f"user connected from: {target_addr}")
+            self._log(f"user connected from: {target_addr}")
             while True:
                 rlist, _, _ = select.select([source_conn, target_conn], [], [])
                 if source_conn in rlist:
                     data = source_conn.recv(4096)
-                    yield self.log(f"received {len(data)} bytes data")
+                    self._log(f"received {len(data)} bytes data")
                     if len(data) == 0:
                         break
                     target_conn.sendall(data)
                 if target_conn in rlist:
                     data = target_conn.recv(4096)
-                    yield self.log(f"sent {len(data)} bytes data")
+                    self._log(f"sent {len(data)} bytes data")
                     if len(data) == 0:
                         break
                     source_conn.sendall(data)
         except socket.timeout:
-            yield self.log("Connection timeout")
+            self._log("Connection timeout")
         except Exception as e:  # pylint: disable=broad-except
-            yield self.log(str(e))
+            self._log(str(e))
         finally:
             source_socket.close()
             target_socket.close()
-            yield self.log("Connection closed")
-            yield 0
+            self._log("Connection closed")
+            self._handle_disconnection()
+            emit('disconnect')
+
+    def _handle_connection(self, port):
+        self._logger.info("Prepare client %s connection to port %s", self._client_name, port)
+        db_session = get_session()
+        if record := db_session.get(RpiOrder, self._client_name):
+            record.name = self._client_name
+            record.port = int(port)
+            db_session.commit()
+            self._logger.info("Updated port %s for client %s", port, self._client_name)
+        db_session.close()
+
+    def _handle_disconnection(self):
+        self._logger.info("Deleting record for client %s", self._client_name)
+        db_session = get_session()
+        if record := db_session.get(RpiOrder, self._client_name):
+            db_session.delete(record)
+            db_session.commit()
+            self._logger.info("Deleted record for client %s", self._client_name)
+        db_session.close()
