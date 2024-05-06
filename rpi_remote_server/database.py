@@ -17,13 +17,8 @@ class RpiOrder(Base):
     __tablename__ = 'rpi_order'
 
     name: Mapped[str] = mapped_column(String(50), primary_key=True)
-    host = Column(String(50))
-    username = Column(String(50))
     port = Column(Integer)
-    from_port = Column(Integer)
-    to_port = Column(Integer)
     polled_time = Column(Integer)
-    passwd = Column(String(50))
     metric: Mapped["RpiMetric"] = relationship(back_populates="rpi_order",
                                                cascade="all, delete-orphan")
 

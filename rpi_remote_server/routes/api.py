@@ -3,7 +3,6 @@ from rpi_remote_server.database import get_session, RpiOrder, RpiMetric
 from rpi_remote_server.util import get_time
 from rpi_remote_server.authentication import verify_username
 
-ORDER_KEYS = ("host", "port", "from_port", "to_port", "passwd", "username")
 METRIC_KEYS = ("uptime", "cpu_usage", "memory_usage", "disk_usage", "temperature")
 MANGE_KEYS = ("name", "polled_time")
 
@@ -44,8 +43,8 @@ def get_order():
     resp = {}
 
     if record := db_session.get(RpiOrder, sender_name):
-        if all(bool(getattr(record, value)) for value in ORDER_KEYS):
-            resp = {k: getattr(record, k) for k in ORDER_KEYS}
+        if record.port:
+            resp = {"port": record.port}
         record.polled_time = get_time()
     else:
         record = RpiOrder(name=sender_name, polled_time=get_time())
