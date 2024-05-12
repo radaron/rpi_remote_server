@@ -12,6 +12,8 @@ After clicking on connect button a terminal will shown where the connection deta
 Then you can connect eg.: ssh in your local terminal
 ![](doc/images/terminal.png)
 
+### How it works
+See the block diagram [here](https://app.diagrams.net/?lightbox=1#Uhttps://raw.githubusercontent.com/radaron/rpi_remote_server/master/doc/images/blocks.png), and the sequence diagram [here](https://app.diagrams.net/?lightbox=1#Uhttps://raw.githubusercontent.com/radaron/rpi_remote_server/master/doc/images/sequence.png).
 
 ## Installation
 
