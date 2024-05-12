@@ -23,9 +23,9 @@ lint: reqs-dev
 	@$(ACTIVATE) && PYTHONPATH=. pylint rpi_remote_server
 
 lock: pip
-	@$(ACTIVATE) && pip-compile --generate-hashes --no-emit-index-url --output-file=requirements.txt \
+	@$(ACTIVATE) && pip-compile --upgrade --generate-hashes --no-emit-index-url --output-file=requirements.txt \
 		--resolver=backtracking pyproject.toml
-	@$(ACTIVATE) && pip-compile --generate-hashes --no-emit-index-url --output-file=requirements-dev.txt \
+	@$(ACTIVATE) && pip-compile --upgrade --generate-hashes --no-emit-index-url --output-file=requirements-dev.txt \
 		--resolver=backtracking --extra dev pyproject.toml
 
 add-user:
