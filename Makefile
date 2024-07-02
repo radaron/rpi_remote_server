@@ -24,9 +24,9 @@ lint: reqs-dev
 
 lock: pip
 	@$(ACTIVATE) && pip-compile --upgrade --generate-hashes --no-emit-index-url --output-file=requirements.txt \
-		--resolver=backtracking pyproject.toml
+		--resolver=backtracking --strip-extras pyproject.toml
 	@$(ACTIVATE) && pip-compile --upgrade --generate-hashes --no-emit-index-url --output-file=requirements-dev.txt \
-		--resolver=backtracking --extra dev pyproject.toml
+		--resolver=backtracking --extra dev --strip-extras pyproject.toml
 
 add-user:
 	@$(ACTIVATE) && python -m tools.add_user
