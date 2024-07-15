@@ -19,7 +19,7 @@ class Forwarder:
         db_session = get_session()
         order = db_session.get(RpiOrder, self._client_name)
         db_session.close()
-        return order.username if order else '<unknown>'
+        return order.username if order and order.username else '<unknown>'
 
     @staticmethod
     def _log(msg):
