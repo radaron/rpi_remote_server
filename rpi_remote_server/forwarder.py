@@ -15,6 +15,12 @@ class Forwarder:
         self._logger = logger
         self._connection_timeout = connection_timeout
 
+    def get_client_username(self):
+        db_session = get_session()
+        order = db_session.get(RpiOrder, self._client_name)
+        db_session.close()
+        return order.username if order else '<unknown>'
+
     @staticmethod
     def _log(msg):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -29,14 +35,17 @@ class Forwarder:
 
     def _log_custom_messages(self, port):
         for message in json.loads(config.custom_messages):  # pylint: disable=no-member
-            self._log(message.format(port=port))
+            self._log(message.format(username=self.get_client_username(), port=port))
 
     def start(self):
         try:
             source_socket = self._create_socket()
             target_socket = self._create_socket()
             self._handle_connection(source_socket.getsockname()[1])
-            self._log(f'waiting for connection from {self._client_name} port: {source_socket.getsockname()[1]}')
+            self._log(
+                f'waiting for connection from {self._client_name}'
+                f' port: {source_socket.getsockname()[1]}'
+            )
             source_conn, source_addr = source_socket.accept()
             self._log(f"{self._client_name} connected from: {source_addr}")
             self._log(f'waiting for connection from user port: {target_socket.getsockname()[1]}')

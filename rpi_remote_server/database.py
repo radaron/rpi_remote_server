@@ -13,16 +13,6 @@ ENGINE = None
 Base = declarative_base()
 
 
-class RpiOrder(Base):
-    __tablename__ = 'rpi_order'
-
-    name: Mapped[str] = mapped_column(String(50), primary_key=True)
-    port = Column(Integer)
-    polled_time = Column(Integer)
-    metric: Mapped["RpiMetric"] = relationship(back_populates="rpi_order",
-                                               cascade="all, delete-orphan")
-
-
 class RpiMetric(Base):
     __tablename__ = 'rpi_metric'
 
@@ -36,6 +26,19 @@ class RpiMetric(Base):
     memory_usage = Column(Integer)
     disk_usage = Column(Integer)
     temperature = Column(Integer)
+
+
+class RpiOrder(Base):
+    __tablename__ = 'rpi_order'
+
+    name: Mapped[str] = mapped_column(String(50), primary_key=True)
+    username = Column(String(50))
+    port = Column(Integer)
+    polled_time = Column(Integer)
+    metric: Mapped[RpiMetric] = relationship(
+        back_populates="rpi_order",
+        cascade="all, delete-orphan"
+    )
 
 
 class Authentication(Base):

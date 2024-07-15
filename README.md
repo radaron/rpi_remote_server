@@ -70,11 +70,13 @@ generated automatically after first run
 port_range_start = 10000
 port_range_end = 20000
 custom_messages = [
-  # custom message displays after remote client connected and the {port} replaced with the listening port
+  # custom message displays after remote client connected.
+  # The {port} replaced with the listening port.
+  # The {username} replaced with the client ssh username.
   "This is a custom message",
   "This is a custom message displaying the {port} where user can connect",
-  "Connect: ssh root@example.com -p {port}",
-  "Dynamic port forward: ssh -D 9999 root@example.com -p {port} -t top"
+  "Connect: ssh {username}@example.com -p {port}",
+  "Dynamic port forward: ssh -D 9999 {username}@example.com -p {port} -t top"
   ]
 ```
 
