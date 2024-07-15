@@ -4,8 +4,11 @@ from os import path
 from sqlalchemy import String, Integer, Column
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy.orm import (
-    sessionmaker, relationship, Mapped,
-    mapped_column, declarative_base
+    sessionmaker,
+    relationship,
+    Mapped,
+    mapped_column,
+    declarative_base
 )
 
 
