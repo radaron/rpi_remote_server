@@ -7,7 +7,7 @@ dependencies = [
     "Flask-SocketIO==5.3.6",
     "SQLAlchemy==2.0.23",
     "gunicorn[eventlet]==22.0.0",
-    "requests==2.32.0",
+    "requests==2.32.3",
     "bcrypt==4.1.2",
 ]
 

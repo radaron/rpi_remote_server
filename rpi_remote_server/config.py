@@ -12,8 +12,8 @@ class Config:
             "port_range_start": "10000",
             "port_range_end": "20000",
             "custom_messages": json.dumps([
-                "Connect: ssh root@example.com -p {port}",
-                "Dynamic port forward: ssh -D 9999 root@example.com -p {port} -t top"
+                "Connect: ssh {username}@example.com -p {port}",
+                "Dynamic port forward: ssh -D 9999 {username}@example.com -p {port} -t top"
             ]),
         }
     }

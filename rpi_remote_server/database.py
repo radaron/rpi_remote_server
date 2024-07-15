@@ -17,10 +17,13 @@ class RpiOrder(Base):
     __tablename__ = 'rpi_order'
 
     name: Mapped[str] = mapped_column(String(50), primary_key=True)
+    username = Column(String(50))
     port = Column(Integer)
     polled_time = Column(Integer)
-    metric: Mapped["RpiMetric"] = relationship(back_populates="rpi_order",
-                                               cascade="all, delete-orphan")
+    metric: Mapped['RpiMetric'] = relationship(
+        back_populates="rpi_order",
+        cascade="all, delete-orphan"
+    )
 
 
 class RpiMetric(Base):
@@ -30,7 +33,7 @@ class RpiMetric(Base):
     name: Mapped[str] = mapped_column(ForeignKey("rpi_order.name",
                                                  ondelete='CASCADE',
                                                  onupdate='CASCADE'))
-    rpi_order: Mapped["RpiOrder"] = relationship(back_populates="metric")
+    rpi_order: Mapped['RpiOrder'] = relationship(back_populates="metric")
     uptime = Column(Integer)
     cpu_usage = Column(Integer)
     memory_usage = Column(Integer)

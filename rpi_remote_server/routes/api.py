@@ -35,6 +35,7 @@ def put_metric():
 @api.route("/rpi/api/order", methods=['GET'])
 def get_order():
     sender_name = request.headers.get('name', None)
+    username = request.headers.get('username', None)
 
     if sender_name is None:
         return abort(401)
@@ -46,8 +47,9 @@ def get_order():
         if record.port:
             resp = {"port": record.port}
         record.polled_time = get_time()
+        record.username = username
     else:
-        record = RpiOrder(name=sender_name, polled_time=get_time())
+        record = RpiOrder(name=sender_name, polled_time=get_time(), username=username)
         db_session.add(record)
 
     db_session.commit()

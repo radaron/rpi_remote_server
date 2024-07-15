@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, session, redirect
+from flask import Blueprint, request, session, redirect
 from rpi_remote_server.database import get_session, Authentication
 from rpi_remote_server.authentication import validate_password
 
@@ -24,6 +24,5 @@ def login():
 
 @authentication.route("/rpi/logout", methods=["POST"])
 def logout():
-    response = jsonify({"msg": "logout successful"})
     session.pop('username', None)
     return redirect("/rpi/login")
