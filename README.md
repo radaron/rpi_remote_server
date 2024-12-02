@@ -13,7 +13,8 @@ Then you can connect eg.: ssh in your local terminal
 ![](doc/images/terminal.png)
 
 ### How it works
-See the block diagram [here](https://app.diagrams.net/?lightbox=1#Uhttps://raw.githubusercontent.com/radaron/rpi_remote_server/master/doc/images/blocks.png), and the sequence diagram [here](https://app.diagrams.net/?lightbox=1#Uhttps://raw.githubusercontent.com/radaron/rpi_remote_server/master/doc/images/sequence.png).
+[![block_diagram](doc/images/blocks.png)](https://viewer.diagrams.net/?lightbox=1&highlight=0000ff&nav=1&title=blocks.png#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fradaron%2Frpi_remote_server%2Fmaster%2Fdoc%2Fimages%2Fblocks.png)
+[![block_diagram](doc/images/sequence.png)](https://viewer.diagrams.net/?lightbox=1&highlight=0000ff&nav=1&title=sequence.png#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fradaron%2Frpi_remote_server%2Fmaster%2Fdoc%2Fimages%2Fsequence.png)
 
 ## Installation
 
