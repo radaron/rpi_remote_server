@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  rpi_remote_server:
+    build: .
+    container_name: rpi_remote_server
+    ports:
+      - "8888:8888"
+      - "8900-9000:8900-9000"
+    env_file:
+      - .env

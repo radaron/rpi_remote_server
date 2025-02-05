@@ -45,3 +45,6 @@ build-frontend:
 
 start-dev:
 	@$(ACTIVATE) && EVENTLET_HUB=poll python -m rpi_remote_server.app
+
+docker-compose: build-frontend
+	docker compose up --build
