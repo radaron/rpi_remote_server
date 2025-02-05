@@ -19,6 +19,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4.0.0
+        with:
+          package_json_file: 'frontend/package.json'
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -26,7 +28,7 @@ jobs:
           node-version-file: 'frontend/.nvmrc'
           registry-url: https://npm.pkg.github.com/
           cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -43,7 +45,7 @@ jobs:
 
       - name: Build frontend
         run: |
-          make install-dev
+          make install-fe
           make build-frontend
 
       - name: Build and push Docker image
