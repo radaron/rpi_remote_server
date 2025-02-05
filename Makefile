@@ -16,7 +16,9 @@ reqs-dev: pip
 
 install: virtualenv reqs-prod
 
-install-dev: virtualenv reqs-dev
+install-dev: virtualenv reqs-dev install-fe
+
+install-fe:
 	cd frontend && pnpm install
 
 lint: reqs-dev
