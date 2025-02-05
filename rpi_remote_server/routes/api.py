@@ -9,7 +9,7 @@ MANGE_KEYS = ("name", "polled_time")
 api = Blueprint('api', __name__)
 
 
-@api.route("/rpi/api/metric", methods=['PUT'])
+@api.route("/api/metric", methods=['PUT'])
 def put_metric():
     sender_name = request.json.get('name', None)
 
@@ -32,7 +32,7 @@ def put_metric():
     return jsonify({"resp": "Ok"}), 200
 
 
-@api.route("/rpi/api/order", methods=['GET'])
+@api.route("/api/order", methods=['GET'])
 def get_order():
     sender_name = request.headers.get('name', None)
     username = request.headers.get('username', None)
@@ -57,7 +57,7 @@ def get_order():
     return jsonify(resp)
 
 
-@api.route("/rpi/api/data", methods=['GET'])
+@api.route("/api/data", methods=['GET'])
 def manage_data():
     if verify_username(session.get('username')):
         db_session = get_session()
@@ -76,7 +76,7 @@ def manage_data():
     return jsonify({"msg": "Unauthorized"}), 401
 
 
-@api.route("/rpi/api/data", methods=['DELETE'])
+@api.route("/api/data", methods=['DELETE'])
 def delete_data():
     if verify_username(session.get('username')):
         if data := request.json:

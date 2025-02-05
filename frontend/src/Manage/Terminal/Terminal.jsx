@@ -12,7 +12,7 @@ export const Terminal = () => {
       setConsoleLines((prevConsoleLines) => [...prevConsoleLines, line].slice(1))
     }
     if (connectTarget) {
-      const socket = io('/', { path: '/rpi/socket.io' })
+      const socket = io('/', { path: '/socket.io' })
       socket.on("forward_resp", (msg) => {
         addLine(msg.data)
       })

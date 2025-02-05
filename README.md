@@ -94,19 +94,19 @@ upstream rpi_remote_server {
 server {
   server_name example.com;
 
-  location /rpi/ {
-    proxy_pass http://rpi_remote_server/rpi/;
+  location / {
+    proxy_pass http://rpi_remote_server/;
   }
 
   location / {
-    return 301 http://$server_name/rpi/manage;
+    return 301 http://$server_name/manage;
   }
 
-  location /rpi/socket.io {
+  location /socket.io {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header Host $host;
 
-    proxy_pass http://rpi_remote_server/rpi/socket.io;
+    proxy_pass http://rpi_remote_server/socket.io;
 
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;

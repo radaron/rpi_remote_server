@@ -11,7 +11,7 @@ export const Login = () => {
   const logMeIn = async (event) => {
     event.preventDefault()
     try {
-      const response = await fetch('/rpi/session', {
+      const response = await fetch('/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginForm)
