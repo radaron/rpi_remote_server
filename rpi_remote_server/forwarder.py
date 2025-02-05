@@ -1,11 +1,10 @@
 import select
 import socket
-import json
 from datetime import datetime
 from flask_socketio import emit
 from rpi_remote_server.database import get_session, RpiOrder
 from rpi_remote_server.util import get_random_open_port, LOCAL_ADDRESS
-from rpi_remote_server.config import config
+from rpi_remote_server.config import CUSTOM_MESSAGES
 
 
 class Forwarder:
@@ -34,7 +33,7 @@ class Forwarder:
         return sock
 
     def _log_custom_messages(self, port):
-        for message in json.loads(config.custom_messages):  # pylint: disable=no-member
+        for message in CUSTOM_MESSAGES:  # pylint: disable=no-member
             self._log(message.format(username=self.get_client_username(), port=port))
 
     def start(self):
