@@ -31,9 +31,6 @@ lock: pip
 add-user:
 	@$(ACTIVATE) && python -m tools.add_user
 
-generate-secret:
-	@$(ACTIVATE) && python -m tools.generate_secret
-
 build-frontend:
 	cd frontend && pnpm build
 	rm -rf rpi_remote_server/templates rpi_remote_server/static

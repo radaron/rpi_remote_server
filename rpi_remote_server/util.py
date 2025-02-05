@@ -1,7 +1,8 @@
+import os
 import random
 import socket
 import time
-from rpi_remote_server.config import config
+import uuid
 
 
 LOCAL_ADDRESS = '0.0.0.0'
@@ -11,7 +12,14 @@ def get_time():
     return time.time()
 
 
+def generate_secret_key():
+    with open("secret", "w", encoding="utf-8") as f:
+        f.write(str(uuid.uuid4().hex))
+
+
 def get_secret_key():
+    if not os.path.exists("secret"):
+        generate_secret_key()
     return open("secret", 'r', encoding="utf-8").read()
 
 
