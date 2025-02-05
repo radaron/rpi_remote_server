@@ -23,7 +23,7 @@ export const Manage = () => {
 
   const fetchData = async () => {
     try {
-      const reponse = await fetch('/rpi/api/data', {
+      const reponse = await fetch('/api/data', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ export const Manage = () => {
 
   const deleteItem = async (name) => {
     try {
-      await fetch('/rpi/api/data', {
+      await fetch('/api/data', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ export const Manage = () => {
   const isDetailedView = windowSize.width >= 770;
   const isPhoneLandscapeView = windowSize.height <= 400;
   const logOut = async () => {
-    const response = await fetch('/rpi/logout', {
+    const response = await fetch('/logout', {
       method: 'POST',
     })
     if (response.redirected) {

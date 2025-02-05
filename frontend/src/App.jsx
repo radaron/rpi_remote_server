@@ -7,8 +7,8 @@ function App () {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='rpi/login' element={<Login />}/>
-        <Route path='rpi/manage' element={<Manage />}/>
+        <Route path='/login' element={<Login />}/>
+        <Route path='/manage' element={<Manage />}/>
       </Routes>
     </BrowserRouter>
   )

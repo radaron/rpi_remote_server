@@ -31,17 +31,17 @@ lock: pip
 add-user:
 	@$(ACTIVATE) && python -m tools.add_user
 
-generate-secret:
-	@$(ACTIVATE) && python -m tools.generate_secret
-
 build-frontend:
 	cd frontend && pnpm build
 	rm -rf rpi_remote_server/templates rpi_remote_server/static
 	mkdir -p rpi_remote_server/templates rpi_remote_server/static
 	cp frontend/build/index.html rpi_remote_server/templates/index.html
 	cp -r frontend/build/static/* rpi_remote_server/static/.
-	sed -i'.bak' -e 's/\/static/\/rpi\/static/g' rpi_remote_server/templates/index.html
-	sed -i'.bak' -e 's/\/favicon.ico/\/rpi\/favicon.ico/g' rpi_remote_server/templates/index.html
+	sed -i'.bak' -e 's/\/static/\/static/g' rpi_remote_server/templates/index.html
+	sed -i'.bak' -e 's/\/favicon.ico/\/favicon.ico/g' rpi_remote_server/templates/index.html
 
 start-dev:
 	@$(ACTIVATE) && EVENTLET_HUB=poll python -m rpi_remote_server.app
+
+docker-compose: build-frontend
+	docker compose up --build

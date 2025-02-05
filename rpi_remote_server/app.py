@@ -12,10 +12,10 @@ from rpi_remote_server.routes.pages import pages
 from rpi_remote_server.forwarder import Forwarder
 
 
-app = Flask(__name__, static_url_path="/rpi/static")
+app = Flask(__name__, static_url_path="/static")
 app.secret_key = get_secret_key()
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-socketio = SocketIO(app, cors_allowed_origins='*', async_mode='eventlet', path="/rpi/socket.io")
+socketio = SocketIO(app, cors_allowed_origins='*', async_mode='eventlet', path="/socket.io")
 
 app.register_blueprint(api)
 app.register_blueprint(authentication)
@@ -23,7 +23,7 @@ app.register_blueprint(pages)
 init_db()
 
 
-@app.route('/rpi/favicon.ico')
+@app.route('/favicon.ico')
 def favicon():
     return send_from_directory('images', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 

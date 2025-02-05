@@ -23,66 +23,29 @@ Then you can connect eg.: ssh in your local terminal
 make install
 ```
 
-### Generate secret
-Needs for session cookies
-```
-make generate-secret
-```
-
 ### Create user
 Needs to login the manage page
+Run the following command in the container
 ```
-make add-user
-```
-
-### Create service
-```
-cd <path of cloned repo>
-```
-```
-echo "[Unit]
-Description=rpi_remote server
-After=multi-user.target
-Conflicts=getty@tty1.service
-[Service]
-User=${USER}
-Type=simple
-Environment="LC_ALL=C.UTF-8"
-Environment="LANG=C.UTF-8"
-ExecStart=$(pwd)/.venv/bin/gunicorn
-WorkingDirectory=$(pwd)
-Restart=on-failure
-[Install]
-WantedBy=multi-user.target" | sudo tee /etc/systemd/system/rpi-remote-server.service
-```
-```
-sudo systemctl daemon-reload
-sudo systemctl enable rpi-remote-server.service
-sudo systemctl start rpi-remote-server.service
+python -m tools.add_user
 ```
 
 ### Configuration
 
 #### config.ini
-generated automatically after first run
-``` ini
-[connection]
-# the application randomly select port for receive connection from remote and for user within this range
-port_range_start = 10000
-port_range_end = 20000
-custom_messages = [
-  # custom message displays after remote client connected.
-  # The {port} replaced with the listening port.
-  # The {username} replaced with the client ssh username.
-  "This is a custom message",
-  "This is a custom message displaying the {port} where user can connect",
-  "Connect: ssh {username}@example.com -p {port}",
-  "Dynamic port forward: ssh -D 9999 {username}@example.com -p {port} -t top"
-  ]
+The configs added as environment variables. See the .env file.
+
+``` sh
+PORT_RANGE_START = 8900
+PORT_RANGE_END = 9000
+# custom messages separated by `;`. Displays after remote client connected.
+# The {port} replaced with the listening port.
+# The {username} replaced with the client ssh username.
+CUSTOM_MESSAGES = "Connect: ssh {username}@example.com -p {port};Dynamic port forward: ssh -D 9999 {username}@example.com -p {port} -t top"
 ```
 
 #### Firewall
-Enable the port range in firewall where the connection can happen default is 10000-20000
+Enable the port range in firewall where the connection can happen default is 8900-9000
 
 #### Configure webserver (if needed)
 Nginx example
@@ -94,30 +57,25 @@ upstream rpi_remote_server {
 server {
   server_name example.com;
 
-  location /rpi/ {
-    proxy_pass http://rpi_remote_server/rpi/;
+  location / {
+    proxy_pass http://rpi_remote_server/;
   }
 
   location / {
-    return 301 http://$server_name/rpi/manage;
+    return 301 http://$server_name/manage;
   }
 
-  location /rpi/socket.io {
+  location /socket.io {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header Host $host;
 
-    proxy_pass http://rpi_remote_server/rpi/socket.io;
+    proxy_pass http://rpi_remote_server/socket.io;
 
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
   }
 }
-```
-
-## Check logs
-```
-journalctl -fu rpi-remote-server
 ```
 
 ## Development

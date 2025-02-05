@@ -9,3 +9,5 @@ data/*.sql
 build
 *.bak
 config.ini
+rpi_remote_server/static/**
+rpi_remote_server/templates/**

@@ -6,7 +6,7 @@ from rpi_remote_server.authentication import validate_password
 authentication = Blueprint('authentication', __name__)
 
 
-@authentication.route("/rpi/session", methods=['POST'])
+@authentication.route("/session", methods=['POST'])
 def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
@@ -17,12 +17,12 @@ def login():
             session['username'] = username
 
             db_session.close()
-            return redirect("/rpi/manage")
+            return redirect("/manage")
 
     return {"msg": "Wrong email or password"}, 401
 
 
-@authentication.route("/rpi/logout", methods=["POST"])
+@authentication.route("/logout", methods=["POST"])
 def logout():
     session.pop('username', None)
-    return redirect("/rpi/login")
+    return redirect("/login")
