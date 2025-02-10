@@ -32,7 +32,6 @@ python -m tools.add_user
 
 ### Configuration
 
-#### config.ini
 The configs added as environment variables. See the .env file.
 
 ``` sh
