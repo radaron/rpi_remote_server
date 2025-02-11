@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   rpi_remote_server:
     build: .

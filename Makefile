@@ -39,8 +39,5 @@ build-frontend:
 	sed -i'.bak' -e 's/\/static/\/static/g' rpi_remote_server/templates/index.html
 	sed -i'.bak' -e 's/\/favicon.ico/\/favicon.ico/g' rpi_remote_server/templates/index.html
 
-start-dev:
-	@$(ACTIVATE) && EVENTLET_HUB=poll python -m rpi_remote_server.app
-
 docker-compose: build-frontend
 	docker compose up --build
