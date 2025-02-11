@@ -2,3 +2,5 @@
 disable=
     missing-docstring,
     too-few-public-methods
+
+max-line-length=120

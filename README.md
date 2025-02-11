@@ -18,16 +18,9 @@ Then you can connect eg.: ssh in your local terminal
 
 ## Installation
 
-### Install dependencies
+### Use docker
 ```
-make install
-```
-
-### Create user
-Needs to login the manage page
-Run the following command in the container
-```
-python -m tools.add_user
+docker pull ghcr.io/radaron/rpiremoteserver:latest
 ```
 
 ### Configuration
@@ -41,6 +34,8 @@ PORT_RANGE_END = 9000
 # The {port} replaced with the listening port.
 # The {username} replaced with the client ssh username.
 CUSTOM_MESSAGES = "Connect: ssh {username}@example.com -p {port};Dynamic port forward: ssh -D 9999 {username}@example.com -p {port} -t top"
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "admin"
 ```
 
 #### Firewall
@@ -82,7 +77,7 @@ server {
 ### Install dev requirements
 
 ```
-make install-dev
+make install
 ```
 
 ### Lint code
@@ -98,7 +93,7 @@ cd frontend && pnpm lint
 ### Start dev
 Backend
 ```
-make start-dev
+make docker-compose
 ```
 Frontend
 ```

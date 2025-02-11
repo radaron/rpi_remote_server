@@ -5,12 +5,12 @@
   "dependencies": {
     "bootstrap": "^5.3.3",
     "react": "^18.3.1",
-    "react-bootstrap": "^2.10.4",
+    "react-bootstrap": "^2.10.9",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.24.0",
+    "react-router-dom": "^6.29.0",
     "react-scripts": "5.0.1",
-    "sass": "^1.77.6",
-    "socket.io-client": "^4.7.5",
+    "sass": "^1.84.0",
+    "socket.io-client": "^4.8.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -21,7 +21,7 @@
     "lint:fix": "standard --fix src/",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://192.168.0.48:5000",
+  "proxy": "http://localhost:8888",
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -41,7 +41,7 @@
     ]
   },
   "devDependencies": {
-    "standard": "^17.1.0"
+    "standard": "^17.1.2"
   },
   "engines": {
     "node": ">=20",

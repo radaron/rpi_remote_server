@@ -45,7 +45,7 @@ jobs:
 
       - name: Build frontend
         run: |
-          make install-fe
+          make reqs-fe
           make build-frontend
 
       - name: Build and push Docker image

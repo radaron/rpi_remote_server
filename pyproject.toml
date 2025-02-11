@@ -1,14 +1,14 @@
 [project]
 name = "rpi_remote_server"
-version = "0.1.0"
+version = "0.2.0"
 readme = "README.md"
 dependencies = [
-    "Flask==3.0.3",
-    "Flask-SocketIO==5.3.6",
-    "SQLAlchemy==2.0.23",
-    "gunicorn[eventlet]==22.0.0",
-    "requests==2.32.3",
-    "bcrypt==4.1.2",
+    "Flask~=3.0",
+    "Flask-SocketIO~=5.3",
+    "SQLAlchemy~=2.0",
+    "gunicorn[eventlet]~=22.0",
+    "requests~=2.32",
+    "bcrypt~=4.1",
 ]
 
 [tool.setuptools]
@@ -16,5 +16,5 @@ py-modules = []
 
 [project.optional-dependencies]
 dev = [
-  "pylint==3.0.2",
+  "pylint~=3.0",
 ]
