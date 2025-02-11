@@ -3,10 +3,11 @@ import random
 import socket
 import time
 import uuid
-from rpi_remote_server.config import PORT_RANGE_START, PORT_RANGE_END
+from rpi_remote_server.authentication import generate_salt, hash_password
+from rpi_remote_server.config import PORT_RANGE_START, PORT_RANGE_END, ADMIN_USERNAME, ADMIN_PASSWORD
+from rpi_remote_server.database import get_session, Authentication
 
-
-LOCAL_ADDRESS = '0.0.0.0'
+LOCAL_ADDRESS = "0.0.0.0"
 
 
 def get_time():
@@ -21,15 +22,11 @@ def generate_secret_key():
 def get_secret_key():
     if not os.path.exists("secret"):
         generate_secret_key()
-    return open("secret", 'r', encoding="utf-8").read()
+    return open("secret", "r", encoding="utf-8").read()
 
 
 # pylint: disable=no-member
-def get_random_open_port(
-    port_start=int(PORT_RANGE_START),
-    port_end=int(PORT_RANGE_END),
-    local_address=LOCAL_ADDRESS
-):
+def get_random_open_port(port_start=int(PORT_RANGE_START), port_end=int(PORT_RANGE_END), local_address=LOCAL_ADDRESS):
     while True:
         port = random.randint(port_start, port_end)
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

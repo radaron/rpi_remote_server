@@ -1,9 +1,10 @@
 # pylint: disable=wrong-import-position
 import eventlet
+
 eventlet.monkey_patch()
 
 from flask_socketio import SocketIO  # pylint: disable=import-error
-from flask import Flask, send_from_directory, session
+from flask import Flask, send_from_directory
 from rpi_remote_server.database import init_db
 from rpi_remote_server.util import get_secret_key, create_admin_user
 from rpi_remote_server.routes.api import api
@@ -14,8 +15,8 @@ from rpi_remote_server.forwarder import Forwarder
 
 app = Flask(__name__, static_url_path="/static")
 app.secret_key = get_secret_key()
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-socketio = SocketIO(app, cors_allowed_origins='*', async_mode='eventlet', path="/socket.io")
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet", path="/socket.io")
 
 app.register_blueprint(api)
 app.register_blueprint(authentication)
@@ -24,19 +25,14 @@ init_db()
 create_admin_user()
 
 
-@app.route('/favicon.ico')
+@app.route("/favicon.ico")
 def favicon():
-    return send_from_directory('images', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
-
-
-@app.before_request
-def make_session_permanent():
-    session.permanent = True
+    return send_from_directory("images", "favicon.ico", mimetype="image/vnd.microsoft.icon")
 
 
 @socketio.on("start_forward")
 def forward(event_body):
-    adapter = Forwarder(event_body['name'], app.logger)
+    adapter = Forwarder(event_body["name"], app.logger)
     adapter.start()
 
 
