@@ -14,3 +14,8 @@ def manage_page():
     if verify_username(session.get('username')):
         return render_template("index.html")
     return redirect("/login")
+
+
+@pages.route("/", methods=["GET"])
+def root_page():
+    return redirect("/manage")
