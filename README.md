@@ -18,9 +18,9 @@ Then you can connect eg.: ssh in your local terminal
 
 ## Installation
 
-### Install dependencies
+### Use docker
 ```
-make install
+docker pull ghcr.io/radaron/rpiremoteserver:latest
 ```
 
 ### Configuration
@@ -77,7 +77,7 @@ server {
 ### Install dev requirements
 
 ```
-make install-dev
+make install
 ```
 
 ### Lint code
@@ -93,7 +93,7 @@ cd frontend && pnpm lint
 ### Start dev
 Backend
 ```
-make start-dev
+make docker-compose
 ```
 Frontend
 ```

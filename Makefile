@@ -8,20 +8,15 @@ virtualenv: .venv
 pip: virtualenv
 	@$(ACTIVATE) && pip install --upgrade pip pip-tools
 
-reqs-prod: pip
-	@$(ACTIVATE) && pip install --no-deps -r requirements.txt
-
 reqs-dev: pip
 	@$(ACTIVATE) && pip install --no-deps -r requirements-dev.txt
 
-install: virtualenv reqs-prod
+install: virtualenv reqs-dev install-fe
 
-install-dev: virtualenv reqs-dev install-fe
-
-install-fe:
+reqs-fe:
 	cd frontend && pnpm install
 
-lint: reqs-dev
+lint:
 	@$(ACTIVATE) && PYTHONPATH=. pylint rpi_remote_server
 
 lock: pip
