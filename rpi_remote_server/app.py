@@ -5,7 +5,7 @@ eventlet.monkey_patch()
 from flask_socketio import SocketIO  # pylint: disable=import-error
 from flask import Flask, send_from_directory, session
 from rpi_remote_server.database import init_db
-from rpi_remote_server.util import get_secret_key
+from rpi_remote_server.util import get_secret_key, create_admin_user
 from rpi_remote_server.routes.api import api
 from rpi_remote_server.routes.authentication import authentication
 from rpi_remote_server.routes.pages import pages
@@ -21,6 +21,7 @@ app.register_blueprint(api)
 app.register_blueprint(authentication)
 app.register_blueprint(pages)
 init_db()
+create_admin_user()
 
 
 @app.route('/favicon.ico')

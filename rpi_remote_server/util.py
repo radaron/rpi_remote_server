@@ -35,3 +35,20 @@ def get_random_open_port(
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             if s.connect_ex((local_address, port)) != 0:
                 return port
+
+
+def create_admin_user():
+    salt = generate_salt()
+    password = hash_password(ADMIN_PASSWORD.encode(), salt)
+
+    db_session = get_session()
+
+    if record := db_session.get(Authentication, ADMIN_USERNAME):
+        record.password = password
+        record.salt = salt
+    else:
+        record = Authentication(username=ADMIN_USERNAME, password=password, salt=salt)
+        db_session.add(record)
+
+    db_session.commit()
+    db_session.close()

@@ -30,9 +30,6 @@ lock: pip
 	@$(ACTIVATE) && pip-compile --upgrade --generate-hashes --no-emit-index-url --output-file=requirements-dev.txt \
 		--resolver=backtracking --extra dev --strip-extras pyproject.toml
 
-add-user:
-	@$(ACTIVATE) && python -m tools.add_user
-
 build-frontend:
 	cd frontend && pnpm build
 	rm -rf rpi_remote_server/templates rpi_remote_server/static

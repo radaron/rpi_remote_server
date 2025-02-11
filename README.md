@@ -23,13 +23,6 @@ Then you can connect eg.: ssh in your local terminal
 make install
 ```
 
-### Create user
-Needs to login the manage page
-Run the following command in the container
-```
-python -m tools.add_user
-```
-
 ### Configuration
 
 The configs added as environment variables. See the .env file.
@@ -41,6 +34,8 @@ PORT_RANGE_END = 9000
 # The {port} replaced with the listening port.
 # The {username} replaced with the client ssh username.
 CUSTOM_MESSAGES = "Connect: ssh {username}@example.com -p {port};Dynamic port forward: ssh -D 9999 {username}@example.com -p {port} -t top"
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "admin"
 ```
 
 #### Firewall
