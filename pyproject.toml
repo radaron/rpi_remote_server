@@ -1,6 +1,6 @@
 [project]
 name = "rpi_remote_server"
-version = "0.2.0"
+version = "0.3.0"
 readme = "README.md"
 dependencies = [
     "Flask~=3.0",
