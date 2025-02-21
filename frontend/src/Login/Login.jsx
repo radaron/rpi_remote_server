@@ -54,16 +54,18 @@ export const Login = () => {
           >
             <Form.Control
               placeholder='Username'
-              onChange={handleChange}
               name='username'
+              onChange={handleChange}
+              value={loginForm.username}
             />
           </FloatingLabel>
           <FloatingLabel controlId='password' label='Password'>
             <Form.Control
               type='password'
               placeholder='Password'
-              onChange={handleChange}
               name='password'
+              onChange={handleChange}
+              value={loginForm.password}
             />
             {errorText && <p>{errorText}</p>}
           </FloatingLabel>
